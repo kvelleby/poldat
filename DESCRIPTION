@@ -1,0 +1,19 @@
+Package: poldat
+Type: Package
+Title: Package providing updated data for comparative political science
+Version: 0.1.0
+Author: Jonas Vestby
+Maintainer: Jonas Vestby <jonves@prio.org>
+Description: This is currently under development for my own uses.
+    Perhaps it could become useful for you too?
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+  dplyr,
+  httr2,
+  memoise,
+  cachem,
+  lubridate,
+  jsonlite
+RoxygenNote: 7.2.3
