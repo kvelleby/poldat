@@ -215,8 +215,4 @@ territorial_dependencies_base <- function(gw){
 #' @describeIn territorial_dependencies_base Creates a network graph of territorial dependencies from the cShapes Gleditsch-Ward data
 #'
 #' @export
-territorial_dependencies <- function(gw){
-  territorial_dependencies_cached <- memoise::memoise(territorial_dependencies_base, cache = cd)
-  suppressMessages(territorial_dependencies_cached(gw))
-}
-
+territorial_dependencies <- memoise::memoise(territorial_dependencies_base, cache = cachem::cache_disk(rappdirs::user_cache_dir("R-poldat")))

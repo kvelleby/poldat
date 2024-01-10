@@ -78,10 +78,7 @@ get_ucdp_ged_uncached <- function(version){
   return(dat)
 }
 
-#' Creates a disk cache object that can be used with memoise
-cd <- cachem::cache_disk(rappdirs::user_cache_dir("R-poldat"))
-
 #' @describeIn get_ucdp_ged_uncached Get the UCDP GED data from their API
 #'
 #' @export
-get_ucdp_ged <- memoise::memoise(get_ucdp_ged_uncached, cache = cd)
+get_ucdp_ged <- memoise::memoise(get_ucdp_ged_uncached, cache = cachem::cache_disk(rappdirs::user_cache_dir("R-poldat")))
