@@ -10,10 +10,16 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
-  dplyr,
-  httr2,
-  memoise,
-  cachem,
-  lubridate,
-  jsonlite
+    dplyr,
+    httr2,
+    memoise,
+    cachem,
+    lubridate,
+    jsonlite,
+    cshapes,
+    sf,
+    igraph,
+    progress,
+    rlang,
+    lwgeom
 RoxygenNote: 7.2.3
