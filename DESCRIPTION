@@ -15,5 +15,11 @@ Imports:
   memoise,
   cachem,
   lubridate,
-  jsonlite
+  jsonlite,
+  cshapes,
+  sf,
+  igraph,
+  progress
+Depends:
+  lwgeom
 RoxygenNote: 7.2.3
