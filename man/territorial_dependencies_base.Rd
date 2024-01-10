@@ -5,13 +5,15 @@
 \alias{territorial_dependencies}
 \title{Creates a network graph of territorial dependencies from the cShapes Gleditsch-Ward data}
 \usage{
-territorial_dependencies_base(gw)
+territorial_dependencies_base(gw, hashsum)
 
 territorial_dependencies(gw)
 }
 \arguments{
 \item{gw}{The cShapes data based on Gleditsch-Ward.
 Using cshp_gw_modifications() with soviet_25dec = TRUE is recommended.}
+
+\item{hashsum}{Hidden parameter that provides the hash digest of the data object. Used o ensure memoisation works correctly.}
 }
 \value{
 An igraph network graph

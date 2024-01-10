@@ -134,13 +134,14 @@ cshp_gw_modifications <- function(western_sahara = TRUE,
 #'
 #' @param gw The cShapes data based on Gleditsch-Ward.
 #'  Using cshp_gw_modifications() with soviet_25dec = TRUE is recommended.
+#' @param hashsum Hidden parameter that provides the hash digest of the data object. Used o ensure memoisation works correctly.
 #' @returns An igraph network graph
 #'
 #' @examples
 #' gw <- cshp_gw_modifications(soviet_25dec = TRUE)
 #' g <- territorial_dependencies(gw)
 #'
-territorial_dependencies_base <- function(gw){
+territorial_dependencies_base <- function(gw, hashsum){
   gw$uid <- paste(gw$gwcode, gw$fid, sep = "-")
 
   g <- igraph::make_empty_graph()
@@ -215,4 +216,11 @@ territorial_dependencies_base <- function(gw){
 #' @describeIn territorial_dependencies_base Creates a network graph of territorial dependencies from the cShapes Gleditsch-Ward data
 #'
 #' @export
-territorial_dependencies <- memoise::memoise(territorial_dependencies_base, cache = cachem::cache_disk(rappdirs::user_cache_dir("R-poldat")))
+territorial_dependencies <- function(gw){
+  hashsum <- digest::digest(gw)
+  territorial_dependencies_memoised <- memoise::memoise(territorial_dependencies_base, cache = cachem::cache_disk(rappdirs::user_cache_dir("R-poldat")))
+  g <- territorial_dependencies_memoised(gw)
+  return(g)
+}
+
+
