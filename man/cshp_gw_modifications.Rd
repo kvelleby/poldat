@@ -43,12 +43,14 @@ territories have no state control according to cShapes. In certain applications,
 temporal contiguity is very useful. So this is a practical code change, more than anything.
 (E.g., Ukraine celebrates their independence day on 24 August, not 26 December.)}
 }
+\value{
+sf tibble with all country borders over time
+}
 \description{
 See each parameter for the modifications. The point of these modification is not that they
 are clearly better ways to code the state system. They just represent alternative ways
 to impose a strict system on what is arguably much more fluent and complex.
-}
-\details{
+
 These modifications are not part of or associated with the cShapes team at ETH Zürich.
 
 Notes (i.e., other potential modifications):
@@ -74,4 +76,5 @@ gw_mod <- cshp_gw_modifications()
 gw <- cshapes::cshp(useGW = TRUE)
 gw |> dplyr::filter(country_name \%in\% c("Morocco", "Spanish Sahara", "Western Sahara"))
 gw_mod |> dplyr::filter(country_name \%in\% c("Morocco", "Spanish Sahara", "Western Sahara"))
+
 }
