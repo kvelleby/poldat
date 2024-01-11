@@ -54,6 +54,19 @@ latest_ucdp_version <- function(type = "stable"){
   return(names(versions[length(versions)]))
 }
 
+#' Get the UCDP GED data from their API
+#'
+#' See https://ucdp.uu.se/apidocs/ for more information
+#'
+#' The function cache the results using memoise::memoise.
+#'
+#' @param version A character string denoting the version of UCDP GED you want.
+#'
+#' @return A data frame with UCDP GED data.
+#'
+#' @examples
+#' stable_version <- latest_ucdp_version(type = "stable")
+#' ucdp <- get_ucdp_ged(stable_version)
 get_ucdp_ged_uncached <- function(version){
   req <- httr2::request("https://ucdpapi.pcr.uu.se/api/") |>
     httr2::req_url_path_append("gedevents/") |>
@@ -65,20 +78,7 @@ get_ucdp_ged_uncached <- function(version){
   return(dat)
 }
 
-cd <- cachem::cache_disk(rappdirs::user_cache_dir("R-poldat"))
-
-#' Get the UCDP GED data from their API
+#' @describeIn get_ucdp_ged_uncached Get the UCDP GED data from their API
 #'
-#' See https://ucdp.uu.se/apidocs/ for more information
-#'
-#' The function cache the results using memoise::memoise.
-#'
-#' @param version A character string denoting the version of UCDP GED you want.
-#'
-#' @return A data frame with UCDP GED data.
 #' @export
-#'
-#' @examples
-#' stable_version <- latest_ucdp_version(type = "stable")
-#' ucdp <- get_ucdp_ged(stable_version)
-get_ucdp_ged <- memoise::memoise(get_ucdp_ged_uncached, cache = cd)
+get_ucdp_ged <- memoise::memoise(get_ucdp_ged_uncached, cache = cachem::cache_disk(rappdirs::user_cache_dir("R-poldat")))
