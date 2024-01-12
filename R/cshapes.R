@@ -154,7 +154,8 @@ territorial_dependencies_base <- function(gw, hashsum){
                             end = gw$end,
                             cname = gw$country_name)
 
-  edges <- dplyr::tibble()
+  case_when_there_are_earlier_neighbors <- dplyr::tibble()
+  case_when_there_are_later_neighbors <- dplyr::tibble()
 
   sf::sf_use_s2(FALSE)
   for(i in 1:nrow(gw)){
@@ -171,32 +172,45 @@ territorial_dependencies_base <- function(gw, hashsum){
 
       if(nrow(earlier) > 0){
 
-        intersection_area <- sf::st_intersection(obs, earlier)|> sf::st_area()
-        area_intersection_share <- intersection_area / sf::st_area(obs)
-
+        intersection <- sf::st_intersection(earlier, obs)
+        intersection_area <- sf::st_area(intersection)
+        intersection_share_of_origin <- (intersection_area / sf::st_area(earlier) ) |> as.numeric()
+        intersection_area <- intersection_area |> as.numeric()
 
         destination <- igraph::V(g)[igraph::V(g)$name %in% obs$uid]
         origin <- igraph::V(g)[igraph::V(g)$name %in% earlier$uid]
-        sg <- data.frame("from" = origin$name, "to" = destination$name, "end" = earlier$end |> as.character(), "share_overlap" = area_intersection_share)
-        edges <- dplyr::bind_rows(edges, sg)
-        rm(intersection_area, area_intersection_share)
+        sg <- data.frame("from" = origin$name, "to" = destination$name, "end" = earlier$end |> as.character(),
+                         "a_io" = intersection_share_of_origin, "a_i" = intersection_area)
+        case_when_there_are_earlier_neighbors <- dplyr::bind_rows(case_when_there_are_earlier_neighbors, sg)
+        rm(intersection_area, intersection_share_of_origin)
       }
       if(nrow(later) > 0){
 
-
-        intersection_area <- sf::st_intersection(obs, later)|> sf::st_area()
-        area_intersection_share <- intersection_area / sf::st_area(obs)
+        intersection <- sf::st_intersection(later, obs)
+        intersection_area <- sf::st_area(intersection)
+        intersection_share_of_origin <- (intersection_area / sf::st_area(obs)) |> as.numeric()
+        intersection_area <- intersection_area |> as.numeric()
 
         destination <- igraph::V(g)[igraph::V(g)$name %in% later$uid]
         origin <- igraph::V(g)[igraph::V(g)$name %in% obs$uid]
-        sg <- data.frame("from" = origin$name, "to" = destination$name, "end" = obs$end |> as.character(), "share_overlap" = area_intersection_share)
-        edges <- dplyr::bind_rows(edges, sg)
-        rm(intersection_area, area_intersection_share)
+        sg <- data.frame("from" = origin$name, "to" = destination$name, "end" = obs$end |> as.character(),
+                         "a_io" = intersection_share_of_origin, "a_i" = intersection_area)
+        case_when_there_are_later_neighbors <- dplyr::bind_rows(case_when_there_are_later_neighbors, sg)
+        rm(intersection_area, intersection_share_of_origin)
       }
     }
   }
 
-  edges <- edges |> dplyr::distinct()
+
+  edges <- dplyr::bind_rows(case_when_there_are_later_neighbors,
+                            dplyr::anti_join(case_when_there_are_earlier_neighbors, case_when_there_are_later_neighbors, by = c("from", "to", "end")))
+  # An interesting case where Mauritania and Spanish Western Sahara overlaps but has 0 area intersection
+  # Drop this relation as the spatial overlap is 0.
+  # gw <- cshapes::cshp(dependencies = TRUE)
+  # gw$uid <- paste(gw$gwcode, gw$fid, sep = "-")
+  # gw |> filter(uid %in% c("435-251", "610-450")) |> sf::st_overlaps()
+  # gw |> filter(uid %in% c("435-251", "610-450")) |> sf::st_intersection() |> filter(n.overlaps == 2) |> sf::st_area()
+  edges <- edges |> dplyr::filter(.data$a_io > 0)
 
   sg <- edges |> igraph::graph_from_data_frame()
 
