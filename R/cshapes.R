@@ -263,7 +263,7 @@ gw_panel <- function(gw, time_interval = "year", begin = NULL, stop = NULL){
     if(stop > max(gw$end)){
       gw <- gw |> dplyr::mutate(end = dplyr::if_else(.data$end == max(.data$end), stop, .data$end))
     }
-    gw <- gw |> dplyr::filter(.data$end <= stop)
+    gw <- gw |> dplyr::filter(.data$start <= stop)
   }
 
   gw <- gw |> dplyr::mutate(exist_interval = lubridate::interval(.data$start, .data$end))
