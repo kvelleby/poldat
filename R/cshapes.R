@@ -101,8 +101,8 @@ cshp_gw_modifications <- function(western_sahara = TRUE,
     west_bank_and_gaza$gwcode <- 699
     west_bank_and_gaza$fid <- 700
 
-    gw <- gw |> dplyr::mutate(gwcode = dplyr::if_else(.data$country_name == "West Bank", 699, .data$gwcode))
-    gw <- gw |> dplyr::mutate(gwcode = dplyr::if_else(.data$country_name == "Gaza", 699, .data$gwcode))
+    #gw <- gw |> dplyr::mutate(gwcode = dplyr::if_else(.data$country_name == "West Bank", 699, .data$gwcode))
+    #gw <- gw |> dplyr::mutate(gwcode = dplyr::if_else(.data$country_name == "Gaza", 699, .data$gwcode))
 
     gw <- dplyr::bind_rows(gw, west_bank_and_gaza)
 
