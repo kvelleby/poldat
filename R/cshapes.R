@@ -261,71 +261,71 @@ gw_panel <- function(gw, time_interval = "year", begin = NULL, stop = NULL){
 
   if(!is.null(stop)){
     if(stop > max(gw$end)){
-      gw <- gw |> mutate(end = if_else(end == max(end), stop, end))
+      gw <- gw |> dplyr::mutate(end = dplyr::if_else(.data$end == max(.data$end), stop, .data$end))
     }
-    gw <- gw |> filter(end <= stop)
+    gw <- gw |> dplyr::filter(.data$end <= stop)
   }
 
-  gw <- gw |> mutate(exist_interval = lubridate::interval(start, end))
+  gw <- gw |> dplyr::mutate(exist_interval = lubridate::interval(.data$start, .data$end))
   if(!is.null(begin)){
-    gw <- gw |> mutate(start = if_else(begin %within% exist_interval, begin, start))
-    gw <- gw |> filter(start >= begin)
+    gw <- gw |> dplyr::mutate(start = dplyr::if_else(begin %within% .data$exist_interval, begin, .data$start))
+    gw <- gw |> dplyr::filter(.data$start >= begin)
   }
 
-  res <- gw %>%
-    dplyr::rowwise() %>%
-    dplyr::mutate(mydate = list(seq(.data$start, .data$end, by = time_interval))) %>%
-    tidyr::unnest(mydate) %>%
-    dplyr::arrange(gwcode, mydate)
+  res <- gw |>
+    dplyr::rowwise() |>
+    dplyr::mutate(mydate = list(seq(.data$start, .data$end, by = time_interval))) |>
+    tidyr::unnest(.data$mydate) |>
+    dplyr::arrange(.data$gwcode, .data$mydate)
 
   if(time_interval == "year"){
-    res <- res |> mutate(year = lubridate::year(mydate)) |>
-      dplyr::group_by(gwcode, year) |>
-      dplyr::slice_min(mydate, n = 1)
+    res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate)) |>
+      dplyr::group_by(.data$gwcode, .data$year) |>
+      dplyr::slice_min(.data$mydate, n = 1)
 
-    stopifnot("Country-Year data is not distinct" = res |> dplyr::distinct(gwcode, year) |> nrow() == res |> nrow())
+    stopifnot("Country-Year data is not distinct" = res |> dplyr::distinct(.data$gwcode, .data$year) |> nrow() == res |> nrow())
 
-    res <- res |> mutate(maxdate = ISOdate(year, 12, 31) |> as.Date())
+    res <- res |> dplyr::mutate(maxdate = ISOdate(.data$year, 12, 31) |> as.Date())
   }
   if(time_interval == "month"){
-    res <- res |> mutate(year = lubridate::year(mydate),
-                         month = lubridate::month(mydate))  |>
-      dplyr::group_by(gwcode, year, month) |>
-      dplyr::slice_min(mydate, n = 1)
-    stopifnot("Country-Year-Month data is not distinct" = res |> dplyr::distinct(gwcode, year, month) |> nrow() == res |> nrow())
+    res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate),
+                         month = lubridate::month(.data$mydate))  |>
+      dplyr::group_by(.data$gwcode, .data$year, .data$month) |>
+      dplyr::slice_min(.data$mydate, n = 1)
+    stopifnot("Country-Year-Month data is not distinct" = res |> dplyr::distinct(.data$gwcode, .data$year, .data$month) |> nrow() == res |> nrow())
 
-    res <- res |> mutate(maxdate = zoo::as.Date(zoo::as.yearmon(paste(year, month, sep = "-")), frac = 1))
+    res <- res |> dplyr::mutate(maxdate = zoo::as.Date(zoo::as.yearmon(paste(.data$year, .data$month, sep = "-")), frac = 1))
   }
   if(time_interval == "quarter"){
-    res <- res |> mutate(year = lubridate::year(mydate),
-                         quarter = lubridate::quarter(mydate)) |>
-      dplyr::group_by(gwcode, year, quarter) |>
-      dplyr::slice_min(mydate, n = 1)
-    stopifnot("Country-Year-Quarter data is not distinct" = res |> dplyr::distinct(gwcode, year, quarter) |> nrow() == res |> nrow())
+    res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate),
+                         quarter = lubridate::quarter(.data$mydate)) |>
+      dplyr::group_by(.data$gwcode, .data$year, .data$quarter) |>
+      dplyr::slice_min(.data$mydate, n = 1)
+    stopifnot("Country-Year-Quarter data is not distinct" = res |> dplyr::distinct(.data$gwcode, .data$year, .data$quarter) |> nrow() == res |> nrow())
 
-    res <- res |> mutate(maxdate = zoo::as.Date(zoo::as.yearqtr(paste(year, quarter, sep = "-")), frac = 1))
+    res <- res |> dplyr::mutate(maxdate = zoo::as.Date(zoo::as.yearqtr(paste(.data$year, .data$quarter, sep = "-")), frac = 1))
   }
   if(time_interval == "week"){
-    res <- res |> mutate(year = lubridate::year(mydate),
-                         week = lubridate::week(mydate)) |>
-      dplyr::group_by(gwcode, year, week) |>
-      dplyr::slice_min(mydate, n = 1)
-    stopifnot("Country-Year-Week data is not distinct" = res |> dplyr::distinct(gwcode, year, week) |> nrow() == res |> nrow())
+    res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate),
+                         week = lubridate::week(.data$mydate)) |>
+      dplyr::group_by(.data$gwcode, .data$year, .data$week) |>
+      dplyr::slice_min(.data$mydate, n = 1)
+    stopifnot("Country-Year-Week data is not distinct" = res |> dplyr::distinct(.data$gwcode, .data$year, .data$week) |> nrow() == res |> nrow())
 
-    res <- res |> mutate(maxdate = ISOdate(year, 1, 1)  |> as.Date() + days(week*7-1))
+    res <- res |> dplyr::mutate(maxdate = ISOdate(.data$year, 1, 1)  |> as.Date() + lubridate::days(.data$week*7-1))
   }
   if(time_interval == "day"){
-    res <- res |> mutate(year = lubridate::year(mydate),
-                         month = lubridate::month(mydate),
-                         day = lubridate::day(mydate)) |>
-      dplyr::group_by(gwcode, year, month, day) |>
-      dplyr::slice_min(mydate, n = 1)
-    stopifnot("Country-Year-Month-Day data is not distinct" = res |> dplyr::distinct(gwcode, year, month, day) |> nrow() == res |> nrow())
+    res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate),
+                         month = lubridate::month(.data$mydate),
+                         day = lubridate::day(.data$mydate)) |>
+      dplyr::group_by(.data$gwcode, .data$year, .data$month, .data$day) |>
+      dplyr::slice_min(.data$mydate, n = 1)
+    stopifnot("Country-Year-Month-Day data is not distinct" = res |> dplyr::distinct(.data$gwcode, .data$year, .data$month, .data$day) |> nrow() == res |> nrow())
 
-    res <- res |> mutate(maxdate = ISOdate(year, month, day)  |> as.Date())
+    res <- res |> dplyr::mutate(maxdate = ISOdate(.data$year, .data$month, .data$day)  |> as.Date())
   }
 
-  res <- res |> filter(maxdate < stop)
+  res <- res |> dplyr::filter(.data$maxdate < stop)
 
-  return(res |> dplyr::select(-mydate, -start, -end, -exist_interval, -maxdate))
+  return(res |> dplyr::select(-.data$mydate, -.data$start, -.data$end, -.data$exist_interval, -.data$maxdate))
 }
