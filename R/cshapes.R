@@ -238,6 +238,33 @@ territorial_dependencies <- function(gw){
 }
 
 
+#' Find territorial dependencies of a specific gwcode given a cShapes like dataset
+#'
+#'
+#' @param gwcode An integer or string with the gwcode of the country you want to find dependencies for
+#' @param gw The cShapes data based on Gleditsch-Ward.
+#' @returns An igraph graph
+#' @export
+#'
+#' @examples
+#' gw <- cshp_gw_modifications()
+#' system_which_includes_russia <- find_territorial_dependencies(365, gw)
+#' plot(system_which_includes_russia)
+#'
+find_territorial_dependencies <- function(gwcode, gw){
+  g <- territorial_dependencies(gw)
+  dg <- igraph::decompose(g, "weak")
+  for(i in 1:length(dg)){
+    uids <- (igraph::V(dg[[i]]) |> names())
+    gwcodes <- stringr::str_extract(uids, "[0-9]*")
+    system_found <- gwcode %in% gwcodes
+    if(system_found){
+      return(dg[[i]])
+    }
+  }
+  return(paste(gwcode, "not found"))
+}
+
 #' Create a panel dataset from the cShapes Gleditsch-Ward data
 #'
 #' @description
