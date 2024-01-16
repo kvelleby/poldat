@@ -26,6 +26,9 @@ g <- territorial_dependencies(gw)
 
 memoise::has_cache(territorial_dependencies)(gw)
 memoise::drop_cache(territorial_dependencies)(gw)
+
+usa <- find_territorial_dependencies(2, gw)
+usa |> plot()
 ```
 
 Create a panel dataset from cShapes. 
