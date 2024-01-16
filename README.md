@@ -1,5 +1,7 @@
 # Installation
 
+NOTE: This package is under development. Expect this to break.
+
 ```R
 devtools::install_github("kvelleby/poldat")
 ```
