@@ -14,8 +14,8 @@ library(poldat)
 stable_version <- latest_ucdp_version()
 candidate_version <- latest_ucdp_version(type="candidate")
 
-ucdp <- get_ucdp_ged(stable_version)
-ucdp_candidate <- get_ucdp_ged(candidate_version)
+ged <- get_ucdp_ged(stable_version)
+ged_candidate <- get_ucdp_ged(candidate_version)
 
 memoise::has_cache(get_ucdp_ged)(stable_version)
 memoise::drop_cache(get_ucdp_ged)(stable_version)
