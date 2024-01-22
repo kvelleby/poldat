@@ -164,29 +164,38 @@ ucdp_long_cy_panel <- function(version = "23.1"){
   df <- gw_panel(gw, time_interval = "year", begin = start_year, stop = end_year)
 
   intensity_panel <- ucdp_prio |>
-    select(battle_loc, year, intensity_level) |>
-    separate_rows(battle_loc) |>
-    mutate(battle_loc = as.integer(battle_loc),
-           year = as.integer(year),
-           intensity_level = as.integer(intensity_level)) |>
-    rename(gwcode = battle_loc) |>
-    group_by(gwcode, year) |>
-    summarize(intensity_level = max(intensity_level, na.rm = T)) |>
-    ungroup()
+    dplyr::select(.data$battle_loc, .data$year, .data$intensity_level) |>
+    tidyr::separate_rows(.data$battle_loc) |>
+    dplyr::mutate(battle_loc = as.integer(.data$battle_loc),
+           year = as.integer(.data$year),
+           intensity_level = as.integer(.data$intensity_level)) |>
+    dplyr::rename(gwcode = .data$battle_loc) |>
+    dplyr::group_by(.data$gwcode, .data$year) |>
+    dplyr::summarize(intensity_level = max(.data$intensity_level, na.rm = T)) |>
+    dplyr::ungroup()
 
   battle_deaths <- ucdp_ged |>
-    select(country_id, year, type_of_violence, deaths_a, deaths_b, deaths_civilians, deaths_unknown, best, high, low) |>
-    filter(type_of_violence == 1) |> #state-based violence
-    select(-type_of_violence) |>
-    group_by(country_id, year) |>
-    summarize_all(.funs = sum) |>
-    rename(gwcode = country_id) |>
-    ungroup() |>
-    mutate(intensity_level = if_else(best < 25, 0,
-                                     if_else(best < 1000, 1, 2)))
+    dplyr::select(.data$country_id,
+                  .data$year,
+                  .data$type_of_violence,
+                  .data$deaths_a,
+                  .data$deaths_b,
+                  .data$deaths_civilians,
+                  .data$deaths_unknown,
+                  .data$best,
+                  .data$high,
+                  .data$low) |>
+    dplyr::filter(.data$type_of_violence == 1) |> #state-based violence
+    dplyr::select(-.data$type_of_violence) |>
+    dplyr::group_by(.data$country_id, .data$year) |>
+    dplyr::summarize_all(.funs = sum) |>
+    dplyr::rename(gwcode = .data$country_id) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(intensity_level = dplyr::if_else(.data$best < 25, 0,
+                                                   dplyr::if_else(.data$best < 1000, 1, 2)))
 
-  df <- left_join(df, intensity_panel, by = c("gwcode", "year"))
-  df <- left_join(df, battle_deaths, by = c("gwcode", "year"))
+  df <- dplyr::left_join(df, intensity_panel, by = c("gwcode", "year"))
+  df <- dplyr::left_join(df, battle_deaths, by = c("gwcode", "year"))
 
   return(df)
 }
