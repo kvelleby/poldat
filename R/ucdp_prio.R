@@ -153,15 +153,49 @@ ucdp_prio_battle_locations_before_1989 <- function(){
   return(ucdp_prio_before_1989)
 }
 
+#' A country-year panel data with battle-locations and intensity from 1946-present
+#'
+#' Is based on cShapes 2.0, UCDP/PRIO ACD (1946-88) and UCDP GED (1989-present).
+#'
+#' Using modifications to cshapes using `cshp_gw_modifications()`.
+#' Using re-coded battle-locations data from `ucdp_prio_battle_locations_before_1989()`
+#'
+#' Use UCDP GED point locations to determine country battle location based on the modified cShapes data
+#' (instead of UCDP GED's own country_id code).
+#'
+#' Please cite:
+#'
+#' Gleditsch, Nils Petter; Peter Wallensteen, Mikael Eriksson, Margareta Sollenberg & Håvard Strand
+#' (2002) Armed Conflict 1946–2001: A New Dataset. Journal of Peace Research 39(5): 615–637.
+#'
+#' Sundberg, Ralph, and Erik Melander, 2013, “Introducing the UCDP Georeferenced
+#' Event Dataset”, Journal of Peace Research, vol.50, no.4, 523-532
+#'
+#' Schvitz, Guy, Seraina Rüegger, Luc Girardin, Lars-Erik Cederman, Nils Weidmann, and Kristian Skrede Gleditsch. 2022.
+#' “Mapping The International System, 1886-2017: The CShapes 2.0 Dataset.” Journal of Conflict Resolution 66(1): 144–61.
+#'
+#' @param version A string denoting the version of UCDP GED to use to generate dataset.
+#'
+#' @return A data frame with country-year panel data with battle-locations and intensity from 1946-present
+#'
+#' @examples
+#' df <- ucdp_long_cy_panel()
 ucdp_long_cy_panel <- function(version = "23.1"){
   ucdp_prio <- ucdp_prio_battle_locations_before_1989()
   start_year <- as.Date(paste(min(ucdp_prio$year), "01-01", sep = "-"))
-  end_year <- as.Date(paste(max(ucdp_prio$year), "01-01", sep = "-"))
 
   ucdp_ged <- get_ucdp(version = version)
+  end_year <- as.Date(paste(max(ucdp_ged$year)+1, "01-01", sep = "-"))
+
+  # Not clear how to divide brds across locations...
+  # old_brds <- get_prio_brd() |>
+  #  dplyr::select(new_id, year, low = bdeadlow, best = bdeadbes, high = bdeadbes)
 
   gw <- cshp_gw_modifications()
   df <- gw_panel(gw, time_interval = "year", begin = start_year, stop = end_year)
+  df <- df |> dplyr::left_join(gw |> dplyr::select(gwcode, fid, geometry), by = c("gwcode", "fid")) |> sf::st_as_sf(crs = 4326)
+
+  #ucdp_prio <- ucdp_prio |> dplyr::left_join(old_brds, by = c("conflict_id" = "new_id", "year"))
 
   intensity_panel <- ucdp_prio |>
     dplyr::select(.data$battle_loc, .data$year, .data$intensity_level) |>
@@ -174,8 +208,29 @@ ucdp_long_cy_panel <- function(version = "23.1"){
     dplyr::summarize(intensity_level = max(.data$intensity_level, na.rm = T)) |>
     dplyr::ungroup()
 
-  battle_deaths <- ucdp_ged |>
-    dplyr::select(.data$country_id,
+  # The country_id assignment is not correct (to cShapes 2.0 at least)
+
+  gw <- cshp_gw_modifications()
+  ucdp_ged <- ucdp_ged |> sf::st_as_sf(coords = c("longitude", "latitude"), crs = 4326)
+
+  ucdp_ged_l <- split(ucdp_ged, ucdp_ged$year)
+  df_l <- split(df, df$year)
+
+  ged_years <- list()
+  sf::sf_use_s2(FALSE)
+  for(year in names(ucdp_ged_l)){
+    gw_year <- df_l[[year]]
+    ged_year <- ucdp_ged_l[[year]]
+
+    ged_year <- sf::st_join(ged_year, gw_year |> dplyr::select(correct_gwcode = .data$gwcode))
+    ged_years[[year]] <- ged_year
+  }
+  new_ucdp_ged <- dplyr::bind_rows(ged_years)
+  sf::st_geometry(new_ucdp_ged) <- NULL
+
+
+  battle_deaths <- new_ucdp_ged |>
+    dplyr::select(gwcode = .data$correct_gwcode,
                   .data$year,
                   .data$type_of_violence,
                   .data$deaths_a,
@@ -187,15 +242,41 @@ ucdp_long_cy_panel <- function(version = "23.1"){
                   .data$low) |>
     dplyr::filter(.data$type_of_violence == 1) |> #state-based violence
     dplyr::select(-.data$type_of_violence) |>
-    dplyr::group_by(.data$country_id, .data$year) |>
+    dplyr::group_by(.data$gwcode, .data$year) |>
     dplyr::summarize_all(.funs = sum) |>
-    dplyr::rename(gwcode = .data$country_id) |>
     dplyr::ungroup() |>
     dplyr::mutate(intensity_level = dplyr::if_else(.data$best < 25, 0,
                                                    dplyr::if_else(.data$best < 1000, 1, 2)))
 
+
+
+  brd_panel <- dplyr::bind_rows(intensity_panel,
+                                      battle_deaths |>
+                                        dplyr::select(.data$gwcode,
+                                                      .data$year,
+                                                      .data$intensity_level,
+                                                      .data$best,
+                                                      .data$low,
+                                                      .data$high))
+
+  intensity_panel <- dplyr::bind_rows(intensity_panel,
+                                      battle_deaths |>
+                                        dplyr::select(.data$gwcode,
+                                                      .data$year,
+                                                      .data$intensity_level,
+                                                      .data$best,
+                                                      .data$low,
+                                                      .data$high))
+
+
   df <- dplyr::left_join(df, intensity_panel, by = c("gwcode", "year"))
-  df <- dplyr::left_join(df, battle_deaths, by = c("gwcode", "year"))
+
+  df <- df |> dplyr::mutate(
+    intensity_level = dplyr::if_else(is.na(.data$intensity_level), 0, .data$intensity_level),
+    best = dplyr::if_else(is.na(.data$best) & .data$year >= 1989, 0, .data$best),
+    low = dplyr::if_else(is.na(.data$low) & .data$year >= 1989, 0, .data$low),
+    high = dplyr::if_else(is.na(.data$high) & .data$year >= 1989, 0, .data$high)
+  )
 
   return(df)
 }
