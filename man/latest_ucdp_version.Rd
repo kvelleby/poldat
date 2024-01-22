@@ -2,12 +2,14 @@
 % Please edit documentation in R/ucdp.R
 \name{latest_ucdp_version}
 \alias{latest_ucdp_version}
-\title{Find the latest version of the UCDP GED data}
+\title{Find the latest version of the UCDP data}
 \usage{
-latest_ucdp_version(type = "stable")
+latest_ucdp_version(dataset = "gedevents", type = "stable")
 }
 \arguments{
-\item{type}{Either 'stable' or 'candidate'}
+\item{dataset}{Which dataset to search. One of c("gedevents", "ucdpprioconflict", "dyadic", "nonstate", "onesided", "battledeaths")}
+
+\item{type}{Either 'stable' or 'candidate' (only relevant for "gedevents" dataset)}
 }
 \value{
 A character string representing the latest version of UCDP data.
@@ -17,5 +19,5 @@ See https://ucdp.uu.se/apidocs/ for more information
 }
 \examples{
 stable_version <- latest_ucdp_version(type = "stable")
-ucdp <- get_ucdp_ged(stable_version)
+ged <- get_ucdp(stable_version)
 }

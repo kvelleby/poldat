@@ -2,12 +2,14 @@
 % Please edit documentation in R/ucdp.R
 \name{check_ucdp_version}
 \alias{check_ucdp_version}
-\title{Test if a version number exists in the UCDP GED API}
+\title{Test if a version number exists in the UCDP API}
 \usage{
-check_ucdp_version(version)
+check_ucdp_version(version, dataset = "gedevents")
 }
 \arguments{
 \item{version}{A character string}
+
+\item{dataset}{Which dataset to search. One of c("gedevents", "ucdpprioconflict", "dyadic", "nonstate", "onesided", "battledeaths")}
 }
 \value{
 A boolean

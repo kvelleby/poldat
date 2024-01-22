@@ -101,8 +101,8 @@ cshp_gw_modifications <- function(western_sahara = TRUE,
     west_bank_and_gaza$gwcode <- 699
     west_bank_and_gaza$fid <- 700
 
-    gw <- gw |> dplyr::mutate(gwcode = dplyr::if_else(.data$country_name == "West Bank", 699, .data$gwcode))
-    gw <- gw |> dplyr::mutate(gwcode = dplyr::if_else(.data$country_name == "Gaza", 699, .data$gwcode))
+    #gw <- gw |> dplyr::mutate(gwcode = dplyr::if_else(.data$country_name == "West Bank", 699, .data$gwcode))
+    #gw <- gw |> dplyr::mutate(gwcode = dplyr::if_else(.data$country_name == "Gaza", 699, .data$gwcode))
 
     gw <- dplyr::bind_rows(gw, west_bank_and_gaza)
 
@@ -154,7 +154,8 @@ territorial_dependencies_base <- function(gw, hashsum){
                             end = gw$end,
                             cname = gw$country_name)
 
-  edges <- dplyr::tibble()
+  case_when_there_are_earlier_neighbors <- dplyr::tibble()
+  case_when_there_are_later_neighbors <- dplyr::tibble()
 
   sf::sf_use_s2(FALSE)
   for(i in 1:nrow(gw)){
@@ -171,32 +172,45 @@ territorial_dependencies_base <- function(gw, hashsum){
 
       if(nrow(earlier) > 0){
 
-        intersection_area <- sf::st_intersection(obs, earlier)|> sf::st_area()
-        area_intersection_share <- intersection_area / sf::st_area(obs)
-
+        intersection <- sf::st_intersection(earlier, obs)
+        intersection_area <- sf::st_area(intersection)
+        intersection_share_of_origin <- (intersection_area / sf::st_area(earlier) ) |> as.numeric()
+        intersection_area <- intersection_area |> as.numeric()
 
         destination <- igraph::V(g)[igraph::V(g)$name %in% obs$uid]
         origin <- igraph::V(g)[igraph::V(g)$name %in% earlier$uid]
-        sg <- data.frame("from" = origin$name, "to" = destination$name, "end" = earlier$end |> as.character(), "share_overlap" = area_intersection_share)
-        edges <- dplyr::bind_rows(edges, sg)
-        rm(intersection_area, area_intersection_share)
+        sg <- data.frame("from" = origin$name, "to" = destination$name, "end" = earlier$end |> as.character(),
+                         "a_io" = intersection_share_of_origin, "a_i" = intersection_area)
+        case_when_there_are_earlier_neighbors <- dplyr::bind_rows(case_when_there_are_earlier_neighbors, sg)
+        rm(intersection_area, intersection_share_of_origin)
       }
       if(nrow(later) > 0){
 
-
-        intersection_area <- sf::st_intersection(obs, later)|> sf::st_area()
-        area_intersection_share <- intersection_area / sf::st_area(obs)
+        intersection <- sf::st_intersection(later, obs)
+        intersection_area <- sf::st_area(intersection)
+        intersection_share_of_origin <- (intersection_area / sf::st_area(obs)) |> as.numeric()
+        intersection_area <- intersection_area |> as.numeric()
 
         destination <- igraph::V(g)[igraph::V(g)$name %in% later$uid]
         origin <- igraph::V(g)[igraph::V(g)$name %in% obs$uid]
-        sg <- data.frame("from" = origin$name, "to" = destination$name, "end" = obs$end |> as.character(), "share_overlap" = area_intersection_share)
-        edges <- dplyr::bind_rows(edges, sg)
-        rm(intersection_area, area_intersection_share)
+        sg <- data.frame("from" = origin$name, "to" = destination$name, "end" = obs$end |> as.character(),
+                         "a_io" = intersection_share_of_origin, "a_i" = intersection_area)
+        case_when_there_are_later_neighbors <- dplyr::bind_rows(case_when_there_are_later_neighbors, sg)
+        rm(intersection_area, intersection_share_of_origin)
       }
     }
   }
 
-  edges <- edges |> dplyr::distinct()
+
+  edges <- dplyr::bind_rows(case_when_there_are_later_neighbors,
+                            dplyr::anti_join(case_when_there_are_earlier_neighbors, case_when_there_are_later_neighbors, by = c("from", "to", "end")))
+  # An interesting case where Mauritania and Spanish Western Sahara overlaps but has 0 area intersection
+  # Drop this relation as the spatial overlap is 0.
+  # gw <- cshapes::cshp(dependencies = TRUE)
+  # gw$uid <- paste(gw$gwcode, gw$fid, sep = "-")
+  # gw |> filter(uid %in% c("435-251", "610-450")) |> sf::st_overlaps()
+  # gw |> filter(uid %in% c("435-251", "610-450")) |> sf::st_intersection() |> filter(n.overlaps == 2) |> sf::st_area()
+  edges <- edges |> dplyr::filter(.data$a_io > 0)
 
   sg <- edges |> igraph::graph_from_data_frame()
 
@@ -224,3 +238,121 @@ territorial_dependencies <- function(gw){
 }
 
 
+#' Find territorial dependencies of a specific gwcode given a cShapes like dataset
+#'
+#'
+#' @param gwcode An integer or string with the gwcode of the country you want to find dependencies for
+#' @param gw The cShapes data based on Gleditsch-Ward.
+#' @returns An igraph graph
+#' @export
+#'
+#' @examples
+#' gw <- cshp_gw_modifications()
+#' system_which_includes_russia <- find_territorial_dependencies(365, gw)
+#' plot(system_which_includes_russia)
+#'
+find_territorial_dependencies <- function(gwcode, gw){
+  g <- territorial_dependencies(gw)
+  dg <- igraph::decompose(g, "weak")
+  for(i in 1:length(dg)){
+    uids <- (igraph::V(dg[[i]]) |> names())
+    gwcodes <- stringr::str_extract(uids, "[0-9]*")
+    system_found <- gwcode %in% gwcodes
+    if(system_found){
+      return(dg[[i]])
+    }
+  }
+  return(paste(gwcode, "not found"))
+}
+
+#' Create a panel dataset from the cShapes Gleditsch-Ward data
+#'
+#' @description
+#' A panel data (e.g., country-year) is created from the cShapes data. You can specify the time-interval
+#' based on the seq.Date(by=) and a start and end time. If the end is after the end in cShapes, it is
+#' assumed that borders have not changed since last update of cShapes.
+#'
+#' @param gw The cShapes data based on Gleditsch-Ward.
+#' @param time_interval String compatible with the seq.Date(by)-parameter
+#' @param begin A date of the start of the panel
+#' @param stop A date of the end of the panel
+#' @returns A panel-date tibble
+#' @export
+#'
+#' @examples
+#' gw <- cshp_gw_modifications()
+#' df <- gw_panel(gw, time_interval = "week", begin = as.Date("2024-01-01"), stop = Sys.Date())
+#'
+gw_panel <- function(gw, time_interval = "year", begin = NULL, stop = NULL){
+  sf::st_geometry(gw) <- NULL
+
+  if(!is.null(stop)){
+    if(stop > max(gw$end)){
+      gw <- gw |> dplyr::mutate(end = dplyr::if_else(.data$end == max(.data$end), stop, .data$end))
+    }
+    gw <- gw |> dplyr::filter(.data$start <= stop)
+  }
+
+  gw <- gw |> dplyr::mutate(exist_interval = lubridate::interval(.data$start, .data$end))
+  if(!is.null(begin)){
+    gw <- gw |> dplyr::mutate(start = dplyr::if_else(begin %within% .data$exist_interval, begin, .data$start))
+    gw <- gw |> dplyr::filter(.data$start >= begin)
+  }
+
+  res <- gw |>
+    dplyr::rowwise() |>
+    dplyr::mutate(mydate = list(seq(.data$start, .data$end, by = time_interval))) |>
+    tidyr::unnest(.data$mydate) |>
+    dplyr::arrange(.data$gwcode, .data$mydate)
+
+  if(time_interval == "year"){
+    res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate)) |>
+      dplyr::group_by(.data$gwcode, .data$year) |>
+      dplyr::slice_min(.data$mydate, n = 1)
+
+    stopifnot("Country-Year data is not distinct" = res |> dplyr::distinct(.data$gwcode, .data$year) |> nrow() == res |> nrow())
+
+    res <- res |> dplyr::mutate(maxdate = ISOdate(.data$year, 12, 31) |> as.Date())
+  }
+  if(time_interval == "month"){
+    res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate),
+                         month = lubridate::month(.data$mydate))  |>
+      dplyr::group_by(.data$gwcode, .data$year, .data$month) |>
+      dplyr::slice_min(.data$mydate, n = 1)
+    stopifnot("Country-Year-Month data is not distinct" = res |> dplyr::distinct(.data$gwcode, .data$year, .data$month) |> nrow() == res |> nrow())
+
+    res <- res |> dplyr::mutate(maxdate = zoo::as.Date(zoo::as.yearmon(paste(.data$year, .data$month, sep = "-")), frac = 1))
+  }
+  if(time_interval == "quarter"){
+    res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate),
+                         quarter = lubridate::quarter(.data$mydate)) |>
+      dplyr::group_by(.data$gwcode, .data$year, .data$quarter) |>
+      dplyr::slice_min(.data$mydate, n = 1)
+    stopifnot("Country-Year-Quarter data is not distinct" = res |> dplyr::distinct(.data$gwcode, .data$year, .data$quarter) |> nrow() == res |> nrow())
+
+    res <- res |> dplyr::mutate(maxdate = zoo::as.Date(zoo::as.yearqtr(paste(.data$year, .data$quarter, sep = "-")), frac = 1))
+  }
+  if(time_interval == "week"){
+    res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate),
+                         week = lubridate::week(.data$mydate)) |>
+      dplyr::group_by(.data$gwcode, .data$year, .data$week) |>
+      dplyr::slice_min(.data$mydate, n = 1)
+    stopifnot("Country-Year-Week data is not distinct" = res |> dplyr::distinct(.data$gwcode, .data$year, .data$week) |> nrow() == res |> nrow())
+
+    res <- res |> dplyr::mutate(maxdate = ISOdate(.data$year, 1, 1)  |> as.Date() + lubridate::days(.data$week*7-1))
+  }
+  if(time_interval == "day"){
+    res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate),
+                         month = lubridate::month(.data$mydate),
+                         day = lubridate::day(.data$mydate)) |>
+      dplyr::group_by(.data$gwcode, .data$year, .data$month, .data$day) |>
+      dplyr::slice_min(.data$mydate, n = 1)
+    stopifnot("Country-Year-Month-Day data is not distinct" = res |> dplyr::distinct(.data$gwcode, .data$year, .data$month, .data$day) |> nrow() == res |> nrow())
+
+    res <- res |> dplyr::mutate(maxdate = ISOdate(.data$year, .data$month, .data$day)  |> as.Date())
+  }
+
+  res <- res |> dplyr::filter(.data$maxdate < stop)
+
+  return(res |> dplyr::select(-.data$mydate, -.data$start, -.data$end, -.data$exist_interval, -.data$maxdate))
+}
