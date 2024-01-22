@@ -12,12 +12,15 @@
 ucdp_prio_battle_locations_before_1989 <- function(){
 
   # gw <- cshp_gw_modifications()
+  ucdp_prio <- get_ucdp(version = "23.1", dataset = "ucdpprioconflict")
+  ucdp_prio$year <- ucdp_prio$year |> as.numeric()
+  ucdp_prio$conflict_id <- ucdp_prio$conflict_id |> as.numeric()
 
   # Where did the fighting happen here?
   ## Interstate conflicts over government before 1989: Need manual coding
   # ucdp_prio |> filter(type_of_conflict == 2, incompatibility == 2, year < 1989) |> View()
 
-  type22 <- bind_rows(
+  type22 <- dplyr::bind_rows(
     list(conflict_id = 250, battle_loc = "310"), # The Hungarian Uprising in 1956 was fought in Hungary
     list(conflict_id = 350, battle_loc = "55"), # The US invasion of Grenada in 1983 was fought in Grenada.
     list(conflict_id = 431, battle_loc = "700") # The Soviet - Afghan war was mainly fought in Afghanistan.
@@ -27,7 +30,7 @@ ucdp_prio_battle_locations_before_1989 <- function(){
   # ucdp_prio |> filter(type_of_conflict == 2, incompatibility == 1, year < 1989) |> View()
   # ucdp_prio |> filter(type_of_conflict == 2, incompatibility == 1, year < 1989) |> select(conflict_id, location, start_date, ep_end_date, year, gwno_loc, territory_name) |> View()
 
-  type2 <- bind_rows(
+  type2 <- dplyr::bind_rows(
     list(conflict_id = 11343, battle_loc = "651, 6511"), # The Six Day War. Egypt - Israel over Suez/Sinai. Gaza is also part here.
     list(conflict_id = 214, battle_loc = "811"), # Thailand - French Indochina battles over Northern Cambodia.
     list(conflict_id = 215, battle_loc = "339"), # Corfu Channel, battles at sea in the Corfu Channel.
@@ -66,7 +69,7 @@ ucdp_prio_battle_locations_before_1989 <- function(){
   # Incompatibility over both territory and government.
   # ucdp_prio |> filter(type_of_conflict == 2, incompatibility == 3, year < 1989) |> select(conflict_id, location, gwno_loc, year) |> View()
 
-  type23 <- bind_rows(
+  type23 <- dplyr::bind_rows(
     list(conflict_id = 232, battle_loc = "710, 713"), # First Taiwan Strait Crisis. Shelling of islands I'm not sure even is part of cShapes (close to China mainland).
     list(conflict_id = 320, battle_loc = "678, 680"), # North and South Yemen
     list(conflict_id = 324, battle_loc = "630, 645") # Iran - Irak Shatt al-Arab and subsequent Iran - Irak war.
@@ -76,7 +79,7 @@ ucdp_prio_battle_locations_before_1989 <- function(){
   ## Certain violent events in certain years might have happened in the colonizer state?
   # ucdp_prio |> filter(type_of_conflict == 1, year < 1989) |> select(conflict_id, location, side_a, side_b, start_date, ep_end_date, year, gwno_loc, territory_name) |> View()
 
-  type1 <- bind_rows(
+  type1 <- dplyr::bind_rows(
     list(conflict_id = 201, battle_loc = "811"), #Cambodia
     list(conflict_id = 204, battle_loc = "850"), # Indonesia
     list(conflict_id = 207, battle_loc = "665"), # The Irgun/IZL operated in Mandate Palestine before Israel existed.
@@ -105,42 +108,47 @@ ucdp_prio_battle_locations_before_1989 <- function(){
   # ucdp_prio |> filter(type_of_conflict == 3, year < 1989, grepl("Israel", location)) |> select(conflict_id, location, side_a, side_b, start_date, ep_end_date, year, gwno_loc, territory_name) |> View()
 
   # Most intrastate conflicts fight in the same gwcode as in gwno_loc, with a couple exceptions
-  type3 <- ucdp_prio |> filter(type_of_conflict == 3, year < 1989) |> select(conflict_id, battle_loc = gwno_loc) |> distinct() |>
-    mutate(battle_loc = battle_loc)
+  type3 <- ucdp_prio |>
+    dplyr::filter(.data$type_of_conflict == 3, .data$year < 1989) |>
+    dplyr::select(.data$conflict_id, battle_loc = .data$gwno_loc) |>
+    dplyr::distinct()
 
-  type3_changes <- bind_rows(
+  type3_changes <- dplyr::bind_rows(
     list("conflict_id" = 234, "battle_loc" = "6511, 6631, 666, 699"), # The "civil-war" in Israel-Palestine was fought in Israel, Gaza, West Bank, and Palestine.
     list("conflict_id" = 270, "battle_loc" = "220, 615"), # OAS launched attacks both in France and in Algeria (which was part of France...)
     list("conflict_id" = 311, "battle_loc" = "600, 609"), # Fighting between Morocco and Polisario happened in both Western Sahara and in Morocco.
     list("conflict_id" = 428, "battle_loc" = "435, 609") # Fighting between Mauritania and Polisario happened in both Western Sahara and in Mauritania
   )
 
-  type3 <- anti_join(type3, type3_changes, by = "conflict_id") |> bind_rows(type3_changes)
+  type3 <- dplyr::anti_join(type3, type3_changes, by = "conflict_id") |>
+    dplyr::bind_rows(type3_changes)
   type3$type_of_conflict = 3
   ## The internationalized intrastate conflicts are likely to mainly have happened in the "intrastate" state.
   ## However, here you might find certain large events in other countries (e.g., al Qaida attack on the US)
   # ucdp_prio |> filter(type_of_conflict == 4, year < 1989) |> View() |> select(conflict_id, location, side_a, side_b, start_date, ep_end_date, year, gwno_loc, territory_name) |> View()
 
   # Most internationalized intrastate conflicts fight in the same gwcode as in gwno_loc, with a couple exceptions
-  type4 <- ucdp_prio |> filter(type_of_conflict == 4, year < 1989) |> select(conflict_id, battle_loc = gwno_loc) |> distinct() |>
-    mutate(battle_loc = battle_loc)
+  type4 <- ucdp_prio |>
+    dplyr::filter(.data$type_of_conflict == 4, .data$year < 1989) |>
+    dplyr::select(.data$conflict_id, battle_loc = .data$gwno_loc) |>
+    dplyr::distinct()
 
-  type4_changes <- bind_rows(
+  type4_changes <- dplyr::bind_rows(
     list(conflict_id = 234, battle_loc = "6511, 6631, 666, 699"), # Also the internationalized civil-war in Israel-Palestine was fought in Israel, Gaza, West Bank, and Palestine.
     list(conflict_id = 311, battle_loc = "600, 609") # Fighting between Morocco and Polisario happened in both Western Sahara and in Morocco.
   )
-  type4 <- anti_join(type4, type4_changes, by = "conflict_id") |> bind_rows(type4_changes)
+  type4 <- dplyr::anti_join(type4, type4_changes, by = "conflict_id") |>
+    dplyr::bind_rows(type4_changes)
   type4$type_of_conflict = 4
 
-  battle_loc <- bind_rows(type1, type2, type22, type23, type3, type4)
+  battle_loc <- dplyr::bind_rows(type1, type2, type22, type23, type3, type4)
   battle_loc$type_of_conflict <- battle_loc$type_of_conflict |> as.character()
 
-  # many-to-many relations..
-  ucdp_prio <- get_ucdp(version = "23.1", dataset = "ucdpprioconflict")
-  ucdp_prio$year <- ucdp_prio$year |> as.numeric()
-  ucdp_prio$conflict_id <- ucdp_prio$conflict_id |> as.numeric()
 
-  ucdp_prio_before_1989 <- battle_loc |> right_join(ucdp_prio |> filter(year < 1989), by = c("conflict_id", "type_of_conflict"), relationship = "one-to-many")
+  ucdp_prio_before_1989 <- battle_loc |>
+    dplyr::right_join(ucdp_prio |> dplyr::filter(.data$year < 1989),
+                      by = c("conflict_id", "type_of_conflict"),
+                      relationship = "one-to-many")
 
   return(ucdp_prio_before_1989)
 }
