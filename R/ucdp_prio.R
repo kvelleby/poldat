@@ -152,3 +152,41 @@ ucdp_prio_battle_locations_before_1989 <- function(){
 
   return(ucdp_prio_before_1989)
 }
+
+ucdp_long_cy_panel <- function(version = "23.1"){
+  ucdp_prio <- ucdp_prio_battle_locations_before_1989()
+  start_year <- as.Date(paste(min(ucdp_prio$year), "01-01", sep = "-"))
+  end_year <- as.Date(paste(max(ucdp_prio$year), "01-01", sep = "-"))
+
+  ucdp_ged <- get_ucdp(version = version)
+
+  gw <- cshp_gw_modifications()
+  df <- gw_panel(gw, time_interval = "year", begin = start_year, stop = end_year)
+
+  intensity_panel <- ucdp_prio |>
+    select(battle_loc, year, intensity_level) |>
+    separate_rows(battle_loc) |>
+    mutate(battle_loc = as.integer(battle_loc),
+           year = as.integer(year),
+           intensity_level = as.integer(intensity_level)) |>
+    rename(gwcode = battle_loc) |>
+    group_by(gwcode, year) |>
+    summarize(intensity_level = max(intensity_level, na.rm = T)) |>
+    ungroup()
+
+  battle_deaths <- ucdp_ged |>
+    select(country_id, year, type_of_violence, deaths_a, deaths_b, deaths_civilians, deaths_unknown, best, high, low) |>
+    filter(type_of_violence == 1) |> #state-based violence
+    select(-type_of_violence) |>
+    group_by(country_id, year) |>
+    summarize_all(.funs = sum) |>
+    rename(gwcode = country_id) |>
+    ungroup() |>
+    mutate(intensity_level = if_else(best < 25, 0,
+                                     if_else(best < 1000, 1, 2)))
+
+  df <- left_join(df, intensity_panel, by = c("gwcode", "year"))
+  df <- left_join(df, battle_deaths, by = c("gwcode", "year"))
+
+  return(df)
+}
