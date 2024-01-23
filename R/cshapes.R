@@ -275,7 +275,8 @@ find_territorial_dependencies <- function(gwcode, gw){
 #' @param gw The cShapes data based on Gleditsch-Ward.
 #' @param time_interval String compatible with the seq.Date(by)-parameter
 #' @param begin A date of the start of the panel
-#' @param stop A date of the end of the panel
+#' @param stop A date of the end of the panel. Defaults to Sys.Date(). It only returns full units, so if the interval is week,
+#'  and it is Wednesday, the last week will be the last included.
 #' @returns A panel-date tibble
 #' @export
 #'
@@ -283,10 +284,10 @@ find_territorial_dependencies <- function(gwcode, gw){
 #' gw <- cshp_gw_modifications()
 #' df <- gw_panel(gw, time_interval = "week", begin = as.Date("2024-01-01"), stop = Sys.Date())
 #'
-gw_panel <- function(gw, time_interval = "year", begin = NULL, stop = NULL){
+gw_panel <- function(gw, time_interval = "year", begin = NULL, stop = Sys.Date()){
   sf::st_geometry(gw) <- NULL
 
-  if(!is.null(stop)){
+  if(stop > max(gw$end)){
     if(stop > max(gw$end)){
       gw <- gw |> dplyr::mutate(end = dplyr::if_else(.data$end == max(.data$end), stop, .data$end))
     }
@@ -306,53 +307,31 @@ gw_panel <- function(gw, time_interval = "year", begin = NULL, stop = NULL){
     dplyr::arrange(.data$gwcode, .data$mydate)
 
   if(time_interval == "year"){
-    res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate)) |>
-      dplyr::group_by(.data$gwcode, .data$year) |>
-      dplyr::slice_min(.data$mydate, n = 1)
-
-    stopifnot("Country-Year data is not distinct" = res |> dplyr::distinct(.data$gwcode, .data$year) |> nrow() == res |> nrow())
-
+    res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate))
     res <- res |> dplyr::mutate(maxdate = ISOdate(.data$year, 12, 31) |> as.Date())
   }
   if(time_interval == "month"){
     res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate),
-                         month = lubridate::month(.data$mydate))  |>
-      dplyr::group_by(.data$gwcode, .data$year, .data$month) |>
-      dplyr::slice_min(.data$mydate, n = 1)
-    stopifnot("Country-Year-Month data is not distinct" = res |> dplyr::distinct(.data$gwcode, .data$year, .data$month) |> nrow() == res |> nrow())
-
+                         month = lubridate::month(.data$mydate))
     res <- res |> dplyr::mutate(maxdate = zoo::as.Date(zoo::as.yearmon(paste(.data$year, .data$month, sep = "-")), frac = 1))
   }
   if(time_interval == "quarter"){
     res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate),
-                         quarter = lubridate::quarter(.data$mydate)) |>
-      dplyr::group_by(.data$gwcode, .data$year, .data$quarter) |>
-      dplyr::slice_min(.data$mydate, n = 1)
-    stopifnot("Country-Year-Quarter data is not distinct" = res |> dplyr::distinct(.data$gwcode, .data$year, .data$quarter) |> nrow() == res |> nrow())
-
+                         quarter = lubridate::quarter(.data$mydate))
     res <- res |> dplyr::mutate(maxdate = zoo::as.Date(zoo::as.yearqtr(paste(.data$year, .data$quarter, sep = "-")), frac = 1))
   }
   if(time_interval == "week"){
     res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate),
-                         week = lubridate::week(.data$mydate)) |>
-      dplyr::group_by(.data$gwcode, .data$year, .data$week) |>
-      dplyr::slice_min(.data$mydate, n = 1)
-    stopifnot("Country-Year-Week data is not distinct" = res |> dplyr::distinct(.data$gwcode, .data$year, .data$week) |> nrow() == res |> nrow())
-
+                         week = lubridate::week(.data$mydate))
     res <- res |> dplyr::mutate(maxdate = ISOdate(.data$year, 1, 1)  |> as.Date() + lubridate::days(.data$week*7-1))
   }
   if(time_interval == "day"){
     res <- res |> dplyr::mutate(year = lubridate::year(.data$mydate),
                          month = lubridate::month(.data$mydate),
-                         day = lubridate::day(.data$mydate)) |>
-      dplyr::group_by(.data$gwcode, .data$year, .data$month, .data$day) |>
-      dplyr::slice_min(.data$mydate, n = 1)
-    stopifnot("Country-Year-Month-Day data is not distinct" = res |> dplyr::distinct(.data$gwcode, .data$year, .data$month, .data$day) |> nrow() == res |> nrow())
-
+                         day = lubridate::day(.data$mydate))
     res <- res |> dplyr::mutate(maxdate = ISOdate(.data$year, .data$month, .data$day)  |> as.Date())
   }
 
-  res <- res |> dplyr::filter(.data$maxdate < stop)
 
-  return(res |> dplyr::select(-.data$mydate, -.data$start, -.data$end, -.data$exist_interval, -.data$maxdate))
+  return(res |> dplyr::select(-.data$mydate, -.data$exist_interval))
 }
