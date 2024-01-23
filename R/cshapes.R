@@ -332,6 +332,6 @@ gw_panel <- function(gw, time_interval = "year", begin = NULL, stop = Sys.Date()
     res <- res |> dplyr::mutate(maxdate = ISOdate(.data$year, .data$month, .data$day)  |> as.Date())
   }
 
-
+  res <- res |> dplyr::filter(.data$maxdate < Sys.Date(), .data$maxdate %within% exist_interval)
   return(res |> dplyr::select(-.data$mydate, -.data$exist_interval))
 }
