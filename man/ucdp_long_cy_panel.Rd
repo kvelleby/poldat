@@ -6,6 +6,9 @@
 \usage{
 ucdp_long_cy_panel(version = "23.1")
 }
+\arguments{
+\item{version}{A string denoting the version of UCDP GED to use to generate dataset.}
+}
 \value{
 A data frame with country-year panel data with battle-locations and intensity from 1946-present
 }

@@ -93,16 +93,16 @@ cshp_gw_modifications <- function(western_sahara = TRUE,
 
   if(palestine){
     #### Israel without acknowledging occupations after the Palestinian Civil War ####
-    west_bank_and_gaza <- gw |> dplyr::filter(.data$country_name == "West Bank") # This does not include Gaza territory!
+    combined_area <- gw |> dplyr::filter(.data$country_name %in% c("West Bank", "Gaza")) |> sf::st_union()
+    west_bank_and_gaza <- gw |> dplyr::filter(.data$country_name == "West Bank") # Use as template
     west_bank_and_gaza$country_name <- "Palestine"
     west_bank_and_gaza$start <- lubridate::ymd("1967-06-10")
     west_bank_and_gaza$end <- lubridate::ymd("2019-12-31")
     west_bank_and_gaza$owner <- 666 # occupied by Israel
     west_bank_and_gaza$gwcode <- 699
     west_bank_and_gaza$fid <- 700
-
-    #gw <- gw |> dplyr::mutate(gwcode = dplyr::if_else(.data$country_name == "West Bank", 699, .data$gwcode))
-    #gw <- gw |> dplyr::mutate(gwcode = dplyr::if_else(.data$country_name == "Gaza", 699, .data$gwcode))
+    sf::st_geometry(west_bank_and_gaza) <- NULL
+    west_bank_and_gaza <- sf::st_sf(west_bank_and_gaza, geometry = combined_area)
 
     gw <- dplyr::bind_rows(gw, west_bank_and_gaza)
 
@@ -270,7 +270,8 @@ find_territorial_dependencies <- function(gwcode, gw){
 #' @description
 #' A panel data (e.g., country-year) is created from the cShapes data. You can specify the time-interval
 #' based on the seq.Date(by=) and a start and end time. If the end is after the end in cShapes, it is
-#' assumed that borders have not changed since last update of cShapes.
+#' assumed that borders have not changed since last update of cShapes. Only the entities that existed on the last day of the
+#' interval (in each interval) are returned to avoid duplicates.
 #'
 #' @param gw The cShapes data based on Gleditsch-Ward.
 #' @param time_interval String compatible with the seq.Date(by)-parameter

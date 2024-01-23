@@ -114,10 +114,10 @@ ucdp_prio_battle_locations_before_1989 <- function(){
     dplyr::distinct()
 
   type3_changes <- dplyr::bind_rows(
-    list("conflict_id" = 234, "battle_loc" = "6511, 6631, 666, 699"), # The "civil-war" in Israel-Palestine was fought in Israel, Gaza, West Bank, and Palestine.
-    list("conflict_id" = 270, "battle_loc" = "220, 615"), # OAS launched attacks both in France and in Algeria (which was part of France...)
-    list("conflict_id" = 311, "battle_loc" = "600, 609"), # Fighting between Morocco and Polisario happened in both Western Sahara and in Morocco.
-    list("conflict_id" = 428, "battle_loc" = "435, 609") # Fighting between Mauritania and Polisario happened in both Western Sahara and in Mauritania
+    list(conflict_id = 234, battle_loc = "6511, 6631, 666, 699"), # The "civil-war" in Israel-Palestine was fought in Israel, Gaza, West Bank, and Palestine.
+    list(conflict_id = 270, battle_loc = "220, 615"), # OAS launched attacks both in France and in Algeria (which was part of France...)
+    list(conflict_id = 311, battle_loc = "600, 609"), # Fighting between Morocco and Polisario happened in both Western Sahara and in Morocco.
+    list(conflict_id = 428, battle_loc = "435, 609") # Fighting between Mauritania and Polisario happened in both Western Sahara and in Mauritania
   )
 
   type3 <- dplyr::anti_join(type3, type3_changes, by = "conflict_id") |>

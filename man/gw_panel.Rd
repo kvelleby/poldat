@@ -4,7 +4,7 @@
 \alias{gw_panel}
 \title{Create a panel dataset from the cShapes Gleditsch-Ward data}
 \usage{
-gw_panel(gw, time_interval = "year", begin = NULL, stop = NULL)
+gw_panel(gw, time_interval = "year", begin = NULL, stop = Sys.Date())
 }
 \arguments{
 \item{gw}{The cShapes data based on Gleditsch-Ward.}
@@ -13,7 +13,8 @@ gw_panel(gw, time_interval = "year", begin = NULL, stop = NULL)
 
 \item{begin}{A date of the start of the panel}
 
-\item{stop}{A date of the end of the panel}
+\item{stop}{A date of the end of the panel. Defaults to Sys.Date(). It only returns full units, so if the interval is week,
+and it is Wednesday, the last week will be the last included.}
 }
 \value{
 A panel-date tibble
@@ -21,7 +22,8 @@ A panel-date tibble
 \description{
 A panel data (e.g., country-year) is created from the cShapes data. You can specify the time-interval
 based on the seq.Date(by=) and a start and end time. If the end is after the end in cShapes, it is
-assumed that borders have not changed since last update of cShapes.
+assumed that borders have not changed since last update of cShapes. Only the entities that existed on the last day of the
+interval (in each interval) are returned to avoid duplicates.
 }
 \examples{
 gw <- cshp_gw_modifications()
