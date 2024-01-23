@@ -44,7 +44,7 @@ Create a country-year panel dataset with battle-locations and conflict intensity
 recoded_battle_locations <- ucdp_prio_battle_locations_before_1989()
 df <- ucdp_long_cy_panel()
 
-df |> dplyr::filter(gwcode %in% c(666, 699, 655, 651, 6511, 6631), year == 1967)
+df |> dplyr::filter(gwcode %in% c(666, 699, 665, 651, 6511, 6631), year == 1967)
 df |> dplyr::filter(year == 1948) |> dplyr::select(intensity_level) |> plot()
 df |> dplyr::filter(year == 2022) |> dplyr::select(intensity_level) |> plot()
 ```
