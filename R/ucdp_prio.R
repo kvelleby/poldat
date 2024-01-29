@@ -47,7 +47,7 @@ ucdp_prio_battle_locations_before_1989 <- function(){
     list(conflict_id = 274, battle_loc = "710, 750"), # The Sino-Indian War mainly occurred in disptuted territories Aksai Chin (cShapes codes this as part of China) and (what ended up being) Arunachal Pradesh (cShapes codes this as part of India).
     list(conflict_id = 276, battle_loc = "851"), # Operation Trikora aimed to seize West Irian (Duch New Guinea) gwcode 851, and is now part of Indonesia. The territory is not part of Indonesia in cShapes before 1969 (gwcode == 850, fid == 638) after the Act of Free Choice plebiscite.
     list(conflict_id = 278, battle_loc = "600, 615"), # The Sand War between Algeria and Morocco
-    list(conflict_id = 281, battle_loc = "820, 850, 823, 824"), # Indonesia - Malaysia confrontation, happened on Borneo (Sarawak, Sabah)
+    list(conflict_id = 281, battle_loc = "820, 850"), # Indonesia - Malaysia confrontation, happened on Borneo (the British Colonies Sarawak (824) and Sabah (823) fall out of cShapes during 1963, which is the first year of this conflict.)
     list(conflict_id = 293, battle_loc = "816, 817"), # Vietnam war in both south and north.
     list(conflict_id = 294, battle_loc = "800, 811"), # Thailand, Cambodia borders
     list(conflict_id = 301, battle_loc = "666, 663, 6631"), # The Six Day War, Israel, Jordan and West Bank
