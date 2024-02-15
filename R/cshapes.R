@@ -52,6 +52,7 @@
 #'  territories have no state control according to cShapes. In certain applications, having full
 #'  temporal contiguity is very useful. So this is a practical code change, more than anything.
 #'  (E.g., Ukraine celebrates their independence day on 24 August, not 26 December.)
+#' @param ... Additional parameters
 #' @returns sf tibble with all country borders over time
 #' @export
 #'
@@ -64,7 +65,7 @@
 cshp_gw_modifications <- function(western_sahara = TRUE,
                                morocco_protectorate = TRUE,
                                palestine = TRUE,
-                               soviet_25dec = TRUE){
+                               soviet_25dec = TRUE, ...){
 
   gw <- cshapes::cshp(useGW = TRUE, dependencies = TRUE)
   gw$owner <- as.numeric(gw$owner)

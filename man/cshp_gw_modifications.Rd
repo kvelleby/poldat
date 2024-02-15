@@ -8,7 +8,8 @@ cshp_gw_modifications(
   western_sahara = TRUE,
   morocco_protectorate = TRUE,
   palestine = TRUE,
-  soviet_25dec = TRUE
+  soviet_25dec = TRUE,
+  ...
 )
 }
 \arguments{
@@ -42,6 +43,8 @@ new states from 26 Dec. So, there are five days where Ukraine, Armenia, Azerbaij
 territories have no state control according to cShapes. In certain applications, having full
 temporal contiguity is very useful. So this is a practical code change, more than anything.
 (E.g., Ukraine celebrates their independence day on 24 August, not 26 December.)}
+
+\item{...}{Additional parameters}
 }
 \value{
 sf tibble with all country borders over time
