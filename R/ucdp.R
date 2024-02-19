@@ -300,7 +300,7 @@ gw_ged_uncached <- function(...){
                      deaths_unknown = sum(.data$deaths_unknown),
                      date_prec = mean(.data$date_prec))
 
-  df <- gw_panel(gw, time_interval = dots$time_interval, begin = min(res$mydate), stop = max(res$mydate)) |>
+  df <- gw_panel(gw, time_interval = dots$time_interval, begin = min(res$mydate), stop = lubridate::ceiling_date(max(res$mydate), unit = dots$time_interval)) |>
     dplyr::mutate(mydate = lubridate::floor_date(.data$maxdate, unit = dots$time_interval)) |>
     dplyr::left_join(sf::st_drop_geometry(res), by = c("gwcode", "mydate")) |>
     dplyr::mutate(best = dplyr::if_else(is.na(.data$best), 0, .data$best),
