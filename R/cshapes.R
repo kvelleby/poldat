@@ -173,31 +173,35 @@ territorial_dependencies_base <- function(gw, hashsum){
 
       if(nrow(earlier) > 0){
 
+        destination_area <- sf::st_area(obs)
+        origin_area <- sf::st_area(earlier)
         intersection <- sf::st_intersection(earlier, obs)
         intersection_area <- sf::st_area(intersection)
-        intersection_share_of_origin <- (intersection_area / sf::st_area(earlier) ) |> as.numeric()
+        #intersection_share_of_origin <- (intersection_area / sf::st_area(earlier) ) |> as.numeric()
         intersection_area <- intersection_area |> as.numeric()
 
         destination <- igraph::V(g)[igraph::V(g)$name %in% obs$uid]
         origin <- igraph::V(g)[igraph::V(g)$name %in% earlier$uid]
-        sg <- data.frame("from" = origin$name, "to" = destination$name, "end" = earlier$end |> as.character(),
-                         "a_io" = intersection_share_of_origin, "a_i" = intersection_area)
+        sg <- dplyr::tibble("from" = origin$name, "to" = destination$name, "end" = earlier$end |> as.character(),
+                         "a_o" = origin_area, "a_d" = destination_area,  "a_i" = intersection_area)
         case_when_there_are_earlier_neighbors <- dplyr::bind_rows(case_when_there_are_earlier_neighbors, sg)
-        rm(intersection_area, intersection_share_of_origin)
+        rm(intersection_area, origin_area, destination_area)
       }
       if(nrow(later) > 0){
 
         intersection <- sf::st_intersection(later, obs)
+        destination_area <- sf::st_area(later)
+        origin_area <- sf::st_area(obs)
         intersection_area <- sf::st_area(intersection)
-        intersection_share_of_origin <- (intersection_area / sf::st_area(obs)) |> as.numeric()
+        #intersection_share_of_origin <- (intersection_area / sf::st_area(obs)) |> as.numeric()
         intersection_area <- intersection_area |> as.numeric()
 
         destination <- igraph::V(g)[igraph::V(g)$name %in% later$uid]
         origin <- igraph::V(g)[igraph::V(g)$name %in% obs$uid]
-        sg <- data.frame("from" = origin$name, "to" = destination$name, "end" = obs$end |> as.character(),
-                         "a_io" = intersection_share_of_origin, "a_i" = intersection_area)
+        sg <- dplyr::tibble("from" = origin$name, "to" = destination$name, "end" = obs$end |> as.character(),
+                         "a_o" = origin_area, "a_d" = destination_area,  "a_i" = intersection_area)
         case_when_there_are_later_neighbors <- dplyr::bind_rows(case_when_there_are_later_neighbors, sg)
-        rm(intersection_area, intersection_share_of_origin)
+        rm(intersection_area, origin_area, destination_area)
       }
     }
   }
@@ -211,7 +215,7 @@ territorial_dependencies_base <- function(gw, hashsum){
   # gw$uid <- paste(gw$gwcode, gw$fid, sep = "-")
   # gw |> filter(uid %in% c("435-251", "610-450")) |> sf::st_overlaps()
   # gw |> filter(uid %in% c("435-251", "610-450")) |> sf::st_intersection() |> filter(n.overlaps == 2) |> sf::st_area()
-  edges <- edges |> dplyr::filter(.data$a_io > 0)
+  edges <- edges |> dplyr::filter(.data$a_i > 0)
 
   sg <- edges |> igraph::graph_from_data_frame()
 
