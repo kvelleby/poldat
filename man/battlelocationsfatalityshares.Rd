@@ -5,7 +5,6 @@
 \alias{battlelocationsfatalityshares}
 \title{Battle-locations fatality shares data}
 \format{
-## `battlelocationsfatalityshares`
 A data frame with 134 rows and 22 columns:
 \describe{
   \item{conflict_id}{UCDP/PRIO conflict id}
@@ -30,9 +29,9 @@ A data frame with 134 rows and 22 columns:
 }
 }
 \source{
-<https://www.prio.org/data/1>
+[PRIO Battle-deaths 3.1](https://www.prio.org/data/1)
 
-<https://ucdp.uu.se/downloads/index.html#armedconflict>
+[UCDP GED 23.1](https://ucdp.uu.se)
 }
 \usage{
 battlelocationsfatalityshares

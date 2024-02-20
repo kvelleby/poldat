@@ -5,7 +5,6 @@
 \alias{ucdpbrds}
 \title{A battle-deaths country-year panel data from 1946-2022}
 \format{
-## `ucdpbrds`
 A data frame with 13170 rows and 14 columns:
 \describe{
   \item{gwcode}{Slightly modified cShapes 2.0 gwcodes}
@@ -24,11 +23,11 @@ A data frame with 13170 rows and 14 columns:
 }
 }
 \source{
-<https://www.prio.org/data/1>
+[PRIO Battle-deaths 3.1](https://www.prio.org/data/1)
 
-<https://ucdp.uu.se/>
+[UCDP GED 23.1](https://ucdp.uu.se)
 
-<https://icr.ethz.ch/data/cshapes/>
+[cShapes 2.0](https://icr.ethz.ch/data/cshapes/)
 }
 \usage{
 ucdpbrds

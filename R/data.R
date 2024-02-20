@@ -7,8 +7,7 @@
 #' .1/.9 is used if most fighting happened on one side of the border, but with documented fighting on the other side. The code is made on a year
 #' by year basis for each conflict_id, and the shares can change over years.
 #'
-#' @format ## `battlelocationsfatalityshares`
-#' A data frame with 134 rows and 22 columns:
+#' @format A data frame with 134 rows and 22 columns:
 #' \describe{
 #'   \item{conflict_id}{UCDP/PRIO conflict id}
 #'   \item{old_id}{Old conflict id as used in PRIO Battle-deaths data}
@@ -30,8 +29,8 @@
 #'   \item{share_a, share_b, share_c, share_d}{The coded share of battle-deaths occuring in 1st, 2nd, 3rd, and 4th gwcode in the battle_loc variable}
 #'   \item{note}{My notes for the coding. These are not replicated for each year if the coding relates to the whole conflict_id.}
 #' }
-#' @source <https://www.prio.org/data/1>
-#' @source <https://ucdp.uu.se/downloads/index.html#armedconflict>
+#' @source [PRIO Battle-deaths 3.1](https://www.prio.org/data/1)
+#' @source [UCDP GED 23.1](https://ucdp.uu.se)
 "battlelocationsfatalityshares"
 
 #' A battle-deaths country-year panel data from 1946-2022
@@ -53,8 +52,7 @@
 #' South Africa, as Namibia was a colony of South Africa at the time.
 #'
 #'
-#' @format ## `ucdpbrds`
-#' A data frame with 13170 rows and 14 columns:
+#' @format A data frame with 13170 rows and 14 columns:
 #' \describe{
 #'   \item{gwcode}{Slightly modified cShapes 2.0 gwcodes}
 #'   \item{country_name}{Country name from cShapes 2.0}
@@ -70,7 +68,7 @@
 #'   \item{best}{Best estimate of battle-deaths}
 #'   \item{source}{Source of battle-deaths data}
 #' }
-#' @source <https://www.prio.org/data/1>
-#' @source <https://ucdp.uu.se/>
-#' @source <https://icr.ethz.ch/data/cshapes/>
+#' @source [PRIO Battle-deaths 3.1](https://www.prio.org/data/1)
+#' @source [UCDP GED 23.1](https://ucdp.uu.se)
+#' @source [cShapes 2.0](https://icr.ethz.ch/data/cshapes/)
 "ucdpbrds"
