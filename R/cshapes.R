@@ -283,6 +283,8 @@ find_territorial_dependencies <- function(gwcode, gw){
 #' @param begin A date of the start of the panel
 #' @param stop A date of the end of the panel. Defaults to Sys.Date(). It only returns full units, so if the interval is week,
 #'  and it is Wednesday, the last week will be the last included.
+#' @param static_date If not null, gw_panel will return a static/balanced time-series data using the world as it was at the
+#'  static_date as template for all time-periods from begin to stop.
 #' @returns A panel-date tibble
 #' @export
 #'
@@ -290,8 +292,26 @@ find_territorial_dependencies <- function(gwcode, gw){
 #' gw <- cshp_gw_modifications()
 #' df <- gw_panel(gw, time_interval = "week", begin = as.Date("2024-01-01"), stop = Sys.Date())
 #'
-gw_panel <- function(gw, time_interval = "year", begin = NULL, stop = Sys.Date()){
+gw_panel <- function(gw, time_interval = "year", begin = NULL, stop = Sys.Date(), static_date = NULL){
   sf::st_geometry(gw) <- NULL
+  gw <- gw |> dplyr::mutate(exist_interval = lubridate::interval(.data$start, .data$end))
+
+  # Setting static_date freezes the world borders at the time of static_date over the begin-stop period.
+  if(!is.null(static_date)){
+    gw <- gw |> dplyr::filter(static_date %within% .data$exist_interval)
+
+    # Pretend that states existed from begin to stop.
+    if(is.null(begin)){
+      gw <- gw |> dplyr::mutate(start = min(.data$start))
+    } else{
+      gw <- gw |> dplyr::mutate(start = begin)
+    }
+    if(is.null(stop)){
+      gw <- gw <- dplyr::mutate(end = max(.data$stop))
+    } else{
+      gw <- gw |> dplyr::mutate(end = stop)
+    }
+  }
 
   if(stop > max(gw$end)){
     if(stop > max(gw$end)){
