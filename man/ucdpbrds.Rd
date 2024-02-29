@@ -16,6 +16,7 @@ A data frame with 13170 rows and 14 columns:
   \item{caplat}{Latitude of the capital from cShapes 2.0}
   \item{b_def}{Dummy if country borders are clearly defined from cShapes 2.0}
   \item{fid}{Feature id, used to match GIS borders from cShapes 2.0}
+  \item{year}{The year of the events}
   \item{low}{Low estimate of battle-deaths}
   \item{high}{High estimate of battle-deaths}
   \item{best}{Best estimate of battle-deaths}

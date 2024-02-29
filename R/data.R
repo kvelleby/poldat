@@ -63,6 +63,7 @@
 #'   \item{caplat}{Latitude of the capital from cShapes 2.0}
 #'   \item{b_def}{Dummy if country borders are clearly defined from cShapes 2.0}
 #'   \item{fid}{Feature id, used to match GIS borders from cShapes 2.0}
+#'   \item{year}{The year of the events}
 #'   \item{low}{Low estimate of battle-deaths}
 #'   \item{high}{High estimate of battle-deaths}
 #'   \item{best}{Best estimate of battle-deaths}
@@ -72,3 +73,29 @@
 #' @source [UCDP GED 23.1](https://ucdp.uu.se)
 #' @source [cShapes 2.0](https://icr.ethz.ch/data/cshapes/)
 "ucdpbrds"
+
+#' A battle-deaths static-country-year panel data from 1946-2022
+#'
+#'
+#' PRIO Battle-deaths 3.1 and UCDP GED 23.1 with cShapes 2.0 and manual coding of battle-locations and fatality shares.
+#' The data base itself of static country borders (as they were 2019-01-01), and estimate "synthetic" versions of these countries
+#' before they existed. For the period 1989-2022, when using UCDP GED, it is simple to identify country-id based on the event location. For the period 1946-1988, I base myself off the manual coding of battle-locations and fatality shares.
+#' Then, I distribute battle-deaths according to the share of area at the time that
+#' intersects with the country-borders as they existed in 2019-01-01. Clearly, this can introduce coding errors, but until
+#' we have sub-national data of battle-locations, coding this in other ways is difficult.
+#'
+#' See `ucdpbrds` for more information.
+#'
+#' @format A data frame with 14037 rows and 5 columns:
+#' \describe{
+#'   \item{gwcode}{Slightly modified cShapes 2.0 gwcodes}
+#'   \item{year}{The year of the events}
+#'   \item{low}{Low estimate of battle-deaths}
+#'   \item{high}{High estimate of battle-deaths}
+#'   \item{best}{Best estimate of battle-deaths}
+#' }
+#' @source [PRIO Battle-deaths 3.1](https://www.prio.org/data/1)
+#' @source [UCDP GED 23.1](https://ucdp.uu.se)
+#' @source [cShapes 2.0](https://icr.ethz.ch/data/cshapes/)
+"ucdpbrds_static"
+
