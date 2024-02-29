@@ -242,6 +242,7 @@ ucdp_ged_panel <- function(version, time_interval, state_based, non_state, one_s
 #' and cShapes mostly align, there are a few cases where they do not. E.g., UCDP codes events in Namibia in 1989 when it was a
 #' South African colony with the gwcode of South Africa, whilst cShapes uses the Namibia code.
 #'
+#' @param static_date If set, then pretend the world borders always looked like cShapes at static_date.
 #' @inheritDotParams cshp_gw_modifications
 #' @inheritDotParams ucdp_ged_panel
 #'
@@ -259,7 +260,7 @@ ucdp_ged_panel <- function(version, time_interval, state_based, non_state, one_s
 #'                one_sided = TRUE,
 #'                drop_poor_precision = TRUE,
 #'                test = TRUE)
-gw_ged_uncached <- function(...){
+gw_ged_uncached <- function(static_date = NULL, ...){
   find_country <- function(df, gw, time_interval, lat  = "latitude", lon = "longitude"){
     sf::sf_use_s2(FALSE)
     mydate <- df$mydate |> dplyr::first() # This assumes mydate is unique.
@@ -273,6 +274,18 @@ gw_ged_uncached <- function(...){
 
   gw <- cshp_gw_modifications(...)
   ged <- ucdp_ged_panel(...)
+
+  if(!is.null(static_date)){
+    min_start <- min(gw$start, na.rm = TRUE)
+    max_end <- max(gw$end, na.rm = TRUE)
+    gw$exist_interval <- lubridate::interval(gw$start, gw$end)
+
+    gw <- gw |>
+      dplyr::filter(static_date %within% .data$exist_interval) |>
+      dplyr::mutate(start = min_start,
+                    end = max_end)
+    gw$exist_interval <- NULL
+  }
 
   ged_list <- split(ged, ged$mydate)
   gw$exist_interval <- lubridate::interval(gw$start, gw$end)
@@ -300,7 +313,7 @@ gw_ged_uncached <- function(...){
                      deaths_unknown = sum(.data$deaths_unknown),
                      date_prec = mean(.data$date_prec))
 
-  df <- gw_panel(gw, time_interval = dots$time_interval, begin = min(res$mydate), stop = lubridate::ceiling_date(max(res$mydate), unit = dots$time_interval)) |>
+  df <- gw_panel(gw, time_interval = dots$time_interval, begin = min(res$mydate), stop = lubridate::ceiling_date(max(res$mydate), unit = dots$time_interval), static_date = static_date) |>
     dplyr::mutate(mydate = lubridate::floor_date(.data$maxdate, unit = dots$time_interval)) |>
     dplyr::left_join(sf::st_drop_geometry(res), by = c("gwcode", "mydate")) |>
     dplyr::mutate(best = dplyr::if_else(is.na(.data$best), 0, .data$best),

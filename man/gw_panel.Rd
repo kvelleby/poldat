@@ -4,7 +4,13 @@
 \alias{gw_panel}
 \title{Create a panel dataset from the cShapes Gleditsch-Ward data}
 \usage{
-gw_panel(gw, time_interval = "year", begin = NULL, stop = Sys.Date())
+gw_panel(
+  gw,
+  time_interval = "year",
+  begin = NULL,
+  stop = Sys.Date(),
+  static_date = NULL
+)
 }
 \arguments{
 \item{gw}{The cShapes data based on Gleditsch-Ward.}
@@ -15,6 +21,9 @@ gw_panel(gw, time_interval = "year", begin = NULL, stop = Sys.Date())
 
 \item{stop}{A date of the end of the panel. Defaults to Sys.Date(). It only returns full units, so if the interval is week,
 and it is Wednesday, the last week will be the last included.}
+
+\item{static_date}{If not null, gw_panel will return a static/balanced time-series data using the world as it was at the
+static_date as template for all time-periods from begin to stop.}
 }
 \value{
 A panel-date tibble

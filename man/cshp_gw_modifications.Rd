@@ -9,6 +9,8 @@ cshp_gw_modifications(
   morocco_protectorate = TRUE,
   palestine = TRUE,
   soviet_25dec = TRUE,
+  yugoslavia_4jun = TRUE,
+  kosovo_17feb = TRUE,
   ...
 )
 }
@@ -42,7 +44,14 @@ with using 21 Dec as the date of Soviet dissolution is that cShapes codes the st
 new states from 26 Dec. So, there are five days where Ukraine, Armenia, Azerbaijan, and Kazakhstan
 territories have no state control according to cShapes. In certain applications, having full
 temporal contiguity is very useful. So this is a practical code change, more than anything.
-(E.g., Ukraine celebrates their independence day on 24 August, not 26 December.)}
+(E.g., Ukraine celebrates their independence day on 24 August, not 26 December.)
+@param yugoslavia_4jun Moves the dissolution of Yugoslavia to 4 June 2006, the start of Montenegro and Serbia to 5 June.
+Montenegro declared independence on 3 June, whilst Serbia declared independence 5 June.
+cShapes 2.0 codes the end of Yugoslavia 2006-06-02, the start of Serbia 2006-06-06
+and the start of Montenegro 2006-06-12. GW codes the end of Yugoslavia 2006-06-04, the start of Serbia 2006-06-05,
+and the start of Montenegro 2006-06-03. Using the dissolution of the larger unit is consistent with how Soviet is treated.
+@param kosovo_17feb Moves the start date of Kosovo to 2008-02-17. This is probably just a coding error (in cshapes 2.0
+it is 2008-02-20). Kosovo unilaterally declared independence 17 Feb, and that is also the start date in GW.}
 
 \item{...}{Additional parameters}
 }
