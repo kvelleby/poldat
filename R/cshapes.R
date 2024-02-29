@@ -57,6 +57,8 @@
 #'  cShapes 2.0 codes the end of Yugoslavia 2006-06-02, the start of Serbia 2006-06-06
 #'  and the start of Montenegro 2006-06-12. GW codes the end of Yugoslavia 2006-06-04, the start of Serbia 2006-06-05,
 #'  and the start of Montenegro 2006-06-03. Using the dissolution of the larger unit is consistent with how Soviet is treated.
+#'  @param kosovo_17feb Moves the start date of Kosovo to 2008-02-17. This is probably just a coding error (in cshapes 2.0
+#'  it is 2008-02-20). Kosovo unilaterally declared independence 17 Feb, and that is also the start date in GW.
 #'
 #' @param ... Additional parameters
 #' @returns sf tibble with all country borders over time
@@ -72,7 +74,8 @@ cshp_gw_modifications <- function(western_sahara = TRUE,
                                morocco_protectorate = TRUE,
                                palestine = TRUE,
                                soviet_25dec = TRUE,
-                               yugoslavia_4jun = TRUE, ...){
+                               yugoslavia_4jun = TRUE,
+                               kosovo_17feb = TRUE, ...){
 
   gw <- cshapes::cshp(useGW = TRUE, dependencies = TRUE)
   gw$owner <- as.numeric(gw$owner)
@@ -141,6 +144,13 @@ cshp_gw_modifications <- function(western_sahara = TRUE,
     gw <- gw |> dplyr::mutate(start = dplyr::if_else((.data$gwcode == 341 &
                                                       .data$fid == 131), as.Date("2006-06-05"), .data$start))
 
+  }
+
+  if(kosovo_17feb){
+    # gw |> dplyr::filter(gwcode == 347)
+    # gw |> dplyr::filter(gwcode == 340)
+    gw <- gw |> dplyr::mutate(start = dplyr::if_else((.data$gwcode == 347 &
+                                                        .data$fid == 141), as.Date("2008-02-17"), .data$start))
   }
 
   gw$gwcode <- as.numeric(gw$gwcode)
