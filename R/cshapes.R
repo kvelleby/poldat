@@ -63,6 +63,8 @@
 #'  confused the date with when the Mali Federation became independent from France (20 June 1960). The Declaration of the
 #'  Republic of Mali happened 22 September 1960, which is consistent with start dates of independent Mali in both cShapes
 #'  and GW. To be consistent with other coding (e.g., Soviet Union), move start of Senegal from 20 September to 22 September.
+#'  The geometry used to represent Mali Federation from June 1960 to September 1960 (fid = 236) appears to be wrong, and is
+#'  swapped with fid = 235.
 #' @param kuwait_protectorate Before independence, Kuwait was a British Protectorate. This is not present in cShapes 2.0. This
 #'  adds this. Uqair Protocol of 1922 defined borders between Mandatory Iraq, Nejd, and Kuwait. Before then, the borders where
 #'  disputed, with the Kuwait-Najd War breaking out after the Ottoman Empire was defeated in WW1 and the Anglo-Ottoman Convention of
@@ -175,8 +177,12 @@ cshp_gw_modifications <- function(western_sahara = TRUE,
   if(senegal_22sep){
     # gw |> dplyr::filter(gwcode == 433)
     # gw |> dplyr::filter(gwcode == 432)
+    new_geom <- gw |> dplyr::filter(gwcode == 432, fid == 235) |> sf::st_geometry()
     gw <- gw |> dplyr::mutate(start = dplyr::if_else((.data$gwcode == 433 &
-                                                        .data$fid == 239), as.Date("1960-09-22"), .data$start))
+                                                        .data$fid == 239), as.Date("1960-09-22"), .data$start),
+                              geometry = dplyr::if_else((.data$gwcode == 432 &
+                                                           .data$fid == 236), new_geom, .data$geometry))
+
   }
 
   if(kuwait_protectorate){
