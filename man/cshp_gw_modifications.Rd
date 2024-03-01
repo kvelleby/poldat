@@ -61,7 +61,9 @@ it is 2008-02-20). Kosovo unilaterally declared independence 17 Feb, and that is
 \item{senegal_22sep}{Senegal withdrew from the Mali Federation 20 September 1960, not 21 June 1960. Could possibly have
 confused the date with when the Mali Federation became independent from France (20 June 1960). The Declaration of the
 Republic of Mali happened 22 September 1960, which is consistent with start dates of independent Mali in both cShapes
-and GW. To be consistent with other coding (e.g., Soviet Union), move start of Senegal from 20 September to 22 September.}
+and GW. To be consistent with other coding (e.g., Soviet Union), move start of Senegal from 20 September to 22 September.
+The geometry used to represent Mali Federation from June 1960 to September 1960 (fid = 236) appears to be wrong, and is
+swapped with fid = 235.}
 
 \item{kuwait_protectorate}{Before independence, Kuwait was a British Protectorate. This is not present in cShapes 2.0. This
 adds this. Uqair Protocol of 1922 defined borders between Mandatory Iraq, Nejd, and Kuwait. Before then, the borders where
