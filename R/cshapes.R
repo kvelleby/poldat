@@ -52,13 +52,28 @@
 #'  territories have no state control according to cShapes. In certain applications, having full
 #'  temporal contiguity is very useful. So this is a practical code change, more than anything.
 #'  (E.g., Ukraine celebrates their independence day on 24 August, not 26 December.)
-#'  @param yugoslavia_4jun Moves the dissolution of Yugoslavia to 4 June 2006, the start of Montenegro and Serbia to 5 June.
+#' @param yugoslavia_4jun Moves the dissolution of Yugoslavia to 4 June 2006, the start of Montenegro and Serbia to 5 June.
 #'  Montenegro declared independence on 3 June, whilst Serbia declared independence 5 June.
 #'  cShapes 2.0 codes the end of Yugoslavia 2006-06-02, the start of Serbia 2006-06-06
 #'  and the start of Montenegro 2006-06-12. GW codes the end of Yugoslavia 2006-06-04, the start of Serbia 2006-06-05,
 #'  and the start of Montenegro 2006-06-03. Using the dissolution of the larger unit is consistent with how Soviet is treated.
-#'  @param kosovo_17feb Moves the start date of Kosovo to 2008-02-17. This is probably just a coding error (in cshapes 2.0
+#' @param kosovo_17feb Moves the start date of Kosovo to 2008-02-17. This is probably just a coding error (in cshapes 2.0
 #'  it is 2008-02-20). Kosovo unilaterally declared independence 17 Feb, and that is also the start date in GW.
+#' @param senegal_22sep Senegal withdrew from the Mali Federation 20 September 1960, not 21 June 1960. Could possibly have
+#'  confused the date with when the Mali Federation became independent from France (20 June 1960). The Declaration of the
+#'  Republic of Mali happened 22 September 1960, which is consistent with start dates of independent Mali in both cShapes
+#'  and GW. To be consistent with other coding (e.g., Soviet Union), move start of Senegal from 20 September to 22 September.
+#' @param kuwait_protectorate Before independence, Kuwait was a British Protectorate. This is not present in cShapes 2.0. This
+#'  adds this. Uqair Protocol of 1922 defined borders between Mandatory Iraq, Nejd, and Kuwait. Before then, the borders where
+#'  disputed, with the Kuwait-Najd War breaking out after the Ottoman Empire was defeated in WW1 and the Anglo-Ottoman Convention of
+#'  1913 was invalidated. Kuwait existed as a British protectorate from 23 January 1899, but this was disputed by the Ottomans. Note
+#'  that this still leaves a stretch between 1914 - 1922 without any coding of this territory. But then, the Anglo-Ottoman Convention
+#'  of 1913 does not make it easy for coders.
+#' @param bahrain_protectorate Before independence, Bahrain was a British Protectorate. This is not present in cShapes 2.0. This
+#'  adds this. On 22 December 1880, Britain signed a treaty with Bahrain that could be argued to be the start of a protectorate. A
+#'  treaty in 1892 further limited Bahrain's power, and in the Anglo-Ottoman convention of 1913, the Ottomans renounced all claims
+#'  they had to Bahrain. Use 22 December 1880 as the start date for the British Protectorate. Earlier dates could be
+#'  possible start dates, e.g., May 1861 (first treaty with Britain) and 2 December 1869 (start of Isa Bin Ali Al Khalifa's reign).
 #'
 #' @param ... Additional parameters
 #' @returns sf tibble with all country borders over time
@@ -75,7 +90,11 @@ cshp_gw_modifications <- function(western_sahara = TRUE,
                                palestine = TRUE,
                                soviet_25dec = TRUE,
                                yugoslavia_4jun = TRUE,
-                               kosovo_17feb = TRUE, ...){
+                               kosovo_17feb = TRUE,
+                               senegal_22sep = TRUE,
+                               kuwait_protectorate = TRUE,
+                               bahrain_protectorate = TRUE,
+                               ...){
 
   gw <- cshapes::cshp(useGW = TRUE, dependencies = TRUE)
   gw$owner <- as.numeric(gw$owner)
@@ -151,6 +170,37 @@ cshp_gw_modifications <- function(western_sahara = TRUE,
     # gw |> dplyr::filter(gwcode == 340)
     gw <- gw |> dplyr::mutate(start = dplyr::if_else((.data$gwcode == 347 &
                                                         .data$fid == 141), as.Date("2008-02-17"), .data$start))
+  }
+
+  if(senegal_22sep){
+    # gw |> dplyr::filter(gwcode == 433)
+    # gw |> dplyr::filter(gwcode == 432)
+    gw <- gw |> dplyr::mutate(start = dplyr::if_else((.data$gwcode == 433 &
+                                                        .data$fid == 239), as.Date("1960-09-22"), .data$start))
+  }
+
+  if(kuwait_protectorate){
+    # gw[sf::st_overlaps(gw |> dplyr::filter(gwcode == 690), gw, sparse = FALSE),]
+    kuwait <- gw |> dplyr::filter(.data$gwcode == 690, .data$fid == 524)
+    kuwait$start <- as.Date("1922-12-02")
+    kuwait$end <- as.Date("1961-06-18")
+    kuwait$status <- "protectorate"
+    kuwait$owner <- 200
+    kuwait$fid <- 523
+
+    gw <- dplyr::bind_rows(gw, kuwait)
+  }
+
+  if(bahrain_protectorate){
+    # gw[sf::st_overlaps(gw |> dplyr::filter(gwcode == 692), gw, sparse = FALSE),]
+    bahrain <- gw |> dplyr::filter(.data$gwcode == 692, .data$fid == 525)
+    bahrain$start <- as.Date("1880-12-22")
+    bahrain$end <- as.Date("1971-08-14")
+    bahrain$status <- "protectorate"
+    bahrain$owner <- 200
+    bahrain$fid <- 524
+
+    gw <- dplyr::bind_rows(gw, bahrain)
   }
 
   gw$gwcode <- as.numeric(gw$gwcode)

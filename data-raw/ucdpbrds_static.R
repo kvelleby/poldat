@@ -92,8 +92,7 @@ E(gew)$weight <- -1*E(gew)$weight
 weight_matrix <- exp(shortest.paths(gew, mode = "out")* -1)
 
 
-ged <- gw_ged(western_sahara = TRUE, morocco_protectorate = TRUE, palestine = TRUE, soviet_25dec = TRUE,
-              version = "23.1", time_interval = "year", state_base = TRUE, non_state = FALSE, one_sided = FALSE,
+ged <- gw_ged(version = "23.1", time_interval = "year", state_base = TRUE, non_state = FALSE, one_sided = FALSE,
               drop_poor_precision = FALSE, test = FALSE, static_date = as.Date("2019-01-01")) |>
   dplyr::mutate(year = lubridate::year(.data$mydate)) |>
   dplyr::select(gwcode, year, best, low, high)
