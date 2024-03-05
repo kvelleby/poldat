@@ -14,6 +14,7 @@ cshp_gw_modifications(
   senegal_22sep = TRUE,
   kuwait_protectorate = TRUE,
   bahrain_protectorate = TRUE,
+  france_overseas = TRUE,
   ...
 )
 }
@@ -78,6 +79,10 @@ treaty in 1892 further limited Bahrain's power, and in the Anglo-Ottoman convent
 they had to Bahrain. Use 22 December 1880 as the start date for the British Protectorate. Earlier dates could be
 possible start dates, e.g., May 1861 (first treaty with Britain) and 2 December 1869 (start of Isa Bin Ali Al Khalifa's reign).}
 
+\item{france_overseas}{Makes overseas departments and regions a part of France. cShapes 2.0 codes these as colonies.
+Data compilations such as WDI, PWT, and WCDE, e.g., population and GDP, include overseas departments in the figures for
+France. Overseas departments have the same laws and rights as mainland France, and are part of the EU.}
+
 \item{...}{Additional parameters}
 }
 \value{
@@ -86,15 +91,13 @@ sf tibble with all country borders over time
 \description{
 See each parameter for the modifications. The point of these modification is not that they
 are clearly better ways to code the state system. They just represent alternative ways
-to impose a strict system on what is arguably much more fluent and complex.
+to impose a strict system on what is arguably much more amorphous and complex. Some
+of these changes do represent what I believe are coding errors, however.
 
 These modifications are not part of or associated with the cShapes team at ETH Zürich.
 
 Notes (i.e., other potential modifications):
 - This does not add microstates (< 250 000 population) to the system. http://ksgleditsch.com/data/microstates.txt.
-- Neither does this add many other territories such as e.g., overseas territories that are not regarded as colonies by cShapes (e.g., those with less than 250 000 inhabitants).
-- French areas outside of Europe that are officially part of France (e.g., Reunion) are still coded as colonies.
-- US occupation of Japan is not coded (Japan is "independent").
 - Chinese occupation of Tibet is not coded. Tibet becomes a part of China in 1950 according to cShapes.
 - Occupations during WWII are generally not coded in GW. See the COW data instead.
 

@@ -66,6 +66,9 @@ adds this. On 22 December 1880, Britain signed a treaty with Bahrain that could 
 treaty in 1892 further limited Bahrain's power, and in the Anglo-Ottoman convention of 1913, the Ottomans renounced all claims
 they had to Bahrain. Use 22 December 1880 as the start date for the British Protectorate. Earlier dates could be
 possible start dates, e.g., May 1861 (first treaty with Britain) and 2 December 1869 (start of Isa Bin Ali Al Khalifa's reign).}
+    \item{\code{france_overseas}}{Makes overseas departments and regions a part of France. cShapes 2.0 codes these as colonies.
+Data compilations such as WDI, PWT, and WCDE, e.g., population and GDP, include overseas departments in the figures for
+France. Overseas departments have the same laws and rights as mainland France, and are part of the EU.}
     \item{\code{version}}{String denoting the UCDP GED version to use.}
     \item{\code{time_interval}}{String denoting the temporal interval to use.}
     \item{\code{state_based}}{Boolean if state_based events should be included}
