@@ -71,6 +71,8 @@ microstates <- microstates |> dplyr::select(countryname, gwcode = statenumber)
 ms <- microstates$gwcode
 names(ms) <- microstates$countryname
 
+sao_tome <- c("São Tomé & Príncipe" = 403) # Other ways to write...
+
 
 custom_gwcode_matches <- c(french_overseas_regions,
                             french_overseas_collectivities,
@@ -85,6 +87,7 @@ custom_gwcode_matches <- c(french_overseas_regions,
                             somaliland,
                             vietnam,
                             kosovo,
-                            ms)
+                            ms,
+                            sao_tome)
 
 usethis::use_data(custom_gwcode_matches, overwrite = TRUE)
