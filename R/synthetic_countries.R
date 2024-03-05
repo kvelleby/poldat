@@ -31,8 +31,24 @@ edge_weights_as_childrens_share_of_variable <- function(g, variable){
   return(lapply(nodes, edge_weight_as_childrens_share_of_variable, variable = variable, g = g) |> dplyr::bind_rows())
 }
 
-area_weighted_synthetic_brds <- function(static_year){
-  df <- ucdpbrds |> mutate(uuid = paste(gwcode, fid, sep = "-"))
+area_weighted_synthetic_brds <- function(df, static_year, ...){
+  if(is.null(df$uuid)){
+    stop("Unique identifier uuid based on '{gwcode}-{fid}' must be included in df.")
+  }
+
+  gw <- cshp_gw_modifications()
+  g <- territorial_dependencies(gw)
+  static_skeleton <- gw_panel(gw, time_interval = "year", static_date = as.Date("2019-01-01"))
+
+
+  ew <- edge_weights_as_childrens_share_of_variable(g, "a_i")
+
+  # https://stackoverflow.com/questions/50003449/multiplicative-distance-between-graph-nodes
+  gew <- ew |> mutate(weight = if_else(weight != 0, log(weight), weight)) |> graph_from_data_frame() # Log weigths to get multiplicative distances
+  E(gew)$weight <- -1*E(gew)$weight
+  weight_matrix <- exp(shortest.paths(gew, mode = "out")* -1)
+
+
 
   uuid_strings <- df |> dplyr::filter(year == static_year) |>
     pull(uuid) |> unique()
