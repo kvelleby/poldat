@@ -11,7 +11,7 @@ A named vector
 custom_gwcode_matches
 }
 \description{
-A set of matches that fits well with `cshp_gw_modifications()' and countrycode(custom_match = custom_gwcode_matches)
+A set of matches that fits well with `cshp_gw_modifications()` and `countrycode(custom_match = custom_gwcode_matches)`
 Depending on whether you match from gwcode to something else, or from something to gwcode, you will need to swap
 names and values of this vector
 }
