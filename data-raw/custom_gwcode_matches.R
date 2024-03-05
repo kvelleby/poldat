@@ -54,7 +54,8 @@ denmark_overseas_territories <- c(
   "Faroe Islands" = 390
 )
 
-palestine <- c("Occupied Palestinian Territories" = 699,
+palestine <- c("Palestine" = 665,
+               "Occupied Palestinian Territories" = 699,
                "Palestinian Territories" = 699,
                "West Bank" = 699,
                "Gaza" = 699)
