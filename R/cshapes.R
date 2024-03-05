@@ -464,25 +464,3 @@ gw_panel <- function(gw, time_interval = "year", begin = NULL, stop = Sys.Date()
   res <- res |> dplyr::filter(.data$maxdate < Sys.Date(), .data$maxdate %within% exist_interval)
   return(res |> dplyr::select(-.data$mydate, -.data$exist_interval))
 }
-
-#' Helper function to get vector with custom gwcode matches
-#'
-#' See `custom_gwcode_matches`
-#'
-#' @param match_from_gwcode If true, returns a vector with gwcodes as names and country names as values, opposite if false
-#'
-#' @returns A named vector
-#' @export
-#'
-#' @examples
-#' get_custom_gwcode_match(match_from_gwcode = TRUE)
-#' get_custom_gwcode_match(match_from_gwcode = FALSE)
-get_custom_gwcode_match <- function(match_from_gwcode = TRUE){
-  if(match_from_gwcode){
-    cnames <- names(custom_gwcode_matches)
-    names(cnames) <- custom_gwcode_matches
-    return(cnames)
-  } else{
-    return(custom_gwcode_matches)
-  }
-}
