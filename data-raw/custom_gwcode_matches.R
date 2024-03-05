@@ -64,6 +64,14 @@ vietnam <- c("Vietnam" = 816) # This is often coded as 817
 yemen <- c("Yemen" = 678)
 kosovo <- c("Kosovo" = 347)
 
+microstates <- readr::read_tsv(url("http://ksgleditsch.com/data/microstates.txt"))
+microstates$countryname <- iconv(microstates$countryname, from = "latin1")
+microstates <- microstates |> dplyr::select(countryname, gwcode = statenumber)
+
+ms <- microstates$gwcode
+names(ms) <- microstates$countryname
+
+
 custom_gwcode_matches <- c(french_overseas_regions,
                             french_overseas_collectivities,
                             us_overseas_territories,
@@ -76,6 +84,7 @@ custom_gwcode_matches <- c(french_overseas_regions,
                             yemen,
                             somaliland,
                             vietnam,
-                            kosovo)
+                            kosovo,
+                            ms)
 
 usethis::use_data(custom_gwcode_matches, overwrite = TRUE)
