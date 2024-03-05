@@ -212,8 +212,10 @@ cshp_gw_modifications <- function(western_sahara = TRUE,
   }
 
   if(france_overseas){
-    # French Guiana (19 March 1946) and Mayotte (31 March 2011) are not part of cShapes.
+    # Mayotte (31 March 2011) are not part of cShapes.
     overseas <- gw |> dplyr::filter(.data$country_name %in% c("Reunion", "Martinique", "Guadeloupe"))
+    french_guyana <- gw |> dplyr::filter(gwcode == 120, fid == 49)
+    overseas <- dplyr::bind_rows(overseas, french_guyana)
     france <- gw |> dplyr::filter(.data$gwcode == 220, .data$fid == 80)
     combined_area <- dplyr::bind_rows(france, overseas) |> sf::st_union() # This returns multipolygon and a linestring...
     france <- sf::st_sf(france, geometry = combined_area[2])
@@ -224,6 +226,8 @@ cshp_gw_modifications <- function(western_sahara = TRUE,
     gw <- gw |> dplyr::mutate(end = dplyr::if_else( (.data$gwcode == 65 & .data$fid == 26), as.Date("1946-03-18"), .data$end))
     gw <- gw |> dplyr::mutate(end = dplyr::if_else( (.data$gwcode == 66 & .data$fid == 27), as.Date("1946-03-18"), .data$end))
     gw <- gw |> dplyr::mutate(end = dplyr::if_else( (.data$gwcode == 585 & .data$fid == 434), as.Date("1946-03-18"), .data$end))
+
+    gw <- gw |> dplyr::filter(!(gwcode == 120 & fid == 49)) # remove French Guyana as colony from 19 March 1946
 
     gw <- dplyr::bind_rows(gw, france)
 
