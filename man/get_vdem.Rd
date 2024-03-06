@@ -7,7 +7,7 @@
 https://www.v-dem.net/
 }
 \usage{
-get_vdem(..., .fun = mean, na.rm = TRUE)
+get_vdem(..., .fun = mean, na.rm = TRUE, impute = TRUE)
 }
 \arguments{
 \item{...}{<\code{\link[=dplyr::dplyr_tidy_select]{tidy-select}}> One or more unquoted
@@ -16,6 +16,12 @@ were positions in the data frame, so expressions like \code{x:y} can
 be used to select a range of variables. See `vdemdata::codebook$clean_tag` for valid expressions.}
 
 \item{.fun}{The function used to summarize observations for mergers.}
+
+\item{impute}{If true the following things are added:
+Uses Jordan coding for West Bank between 1950-67.
+Uses USA coding for Puerto Rico.
+Uses France coding for New Caledonia and French Polynesia.
+Belize, Bahamas, Western Sahara, and Brunei are kept missing.}
 }
 \description{
 Use `vdemdata::vdem`, but matches (as best as possible) to the cShapes system used in poldat.
@@ -29,10 +35,10 @@ V-Dem. It likely misses many issues, but tries to accommodate at least political
 present (as coded by poldat/cShapes).
 }
 \details{
-Filter data before 1946 for the moment.
+Current states with > 250 000 population that are missing in V-Dem:
+ Puerto Rico, Bahamas, Belize, Western Sahara, Brunei, New Caledonia and Dependencies, French Polynesia
 
-Uses Jordan coding for West Bank between 1950-67.
-Uses USA coding for Puerto Rico (as that is completely missing from V-Dem at the moment.)
+Filter data before 1946 for the moment (as there are likely many more inconsistencies before then).
 }
 \examples{
 df <- get_vdem(v2x_libdem)
