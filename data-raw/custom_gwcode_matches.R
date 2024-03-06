@@ -15,10 +15,10 @@ french_overseas_collectivities <- c(
 )
 
 us_overseas_territories <- c(
-  "Guam" = 7,
+  # "Guam" = 7,
   "Puerto Rico" = 6,
-  "United States Virgin Islands" = 8,
-  "U.S. Virgin Islands" = 8,
+  # "United States Virgin Islands" = 8,
+  # "U.S. Virgin Islands" = 8,
   "American Samoa" = 2,
   "Northern Mariana Islands" = 2
 )
@@ -55,10 +55,13 @@ denmark_overseas_territories <- c(
 )
 
 palestine <- c("Palestine" = 665,
+               "Palestine/British Mandate" = 665,
+               "Palestine/West Bank" = 6631,
+               "Palestine/Gaza" = 6511,
                "Occupied Palestinian Territories" = 699,
                "Palestinian Territories" = 699,
-               "West Bank" = 699,
-               "Gaza" = 699)
+               "West Bank" = 6631,
+               "Gaza" = 6511)
 western_sahara <- c("Western Sahara" = 609)
 somaliland <- c("Somaliland" = 520) # We code Somaliland as Somalia.
 vietnam <- c("Vietnam" = 816) # This is often coded as 817
