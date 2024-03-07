@@ -32,28 +32,40 @@ edge_weights_as_childrens_share_of_variable <- function(g, variable){
 }
 
 area_weighted_synthetic_brds <- function(df, static_year, ...){
-  if(is.null(df$uuid)){
-    stop("Unique identifier uuid based on '{gwcode}-{fid}' must be included in df.")
+  if(!("year" %in% names(df))){
+    stop("Variable 'year' must be present in df.")
+  }
+  if(!("gwcode" %in% names(df))){
+    stop("Variable 'gwcode' must be present in df.")
   }
 
-  gw <- cshp_gw_modifications()
+  gw <- cshp_gw_modifications(...)
   g <- territorial_dependencies(gw)
+  dynamic_skeleton <- gw_panel(gw, time_interval = "year") |>
+    dplyr::mutate(duuid = paste(gwcode, fid, sep = "-")) |>
+    dplyr::select(gwcode, year, duuid)
   static_skeleton <- gw_panel(gw, time_interval = "year", static_date = as.Date("2019-01-01"))
+  static_skeleton <- dplyr::left_join(static_skeleton, dynamic_skeleton, by = c("gwcode", "year"))
 
+  df_names <- names(df)
+  df <- dplyr::left_join(static_skeleton, df, by = c("gwcode", "year")) |>
+    dplyr::select(dplyr::all_of(c(df_names, "fid", "duuid"))) |>
+    dplyr::mutate(uuid = paste(gwcode, fid, sep = "-"))
 
   ew <- edge_weights_as_childrens_share_of_variable(g, "a_i")
 
   # https://stackoverflow.com/questions/50003449/multiplicative-distance-between-graph-nodes
-  gew <- ew |> mutate(weight = if_else(weight != 0, log(weight), weight)) |> graph_from_data_frame() # Log weigths to get multiplicative distances
-  E(gew)$weight <- -1*E(gew)$weight
-  weight_matrix <- exp(shortest.paths(gew, mode = "out")* -1)
+  gew <- ew |>
+    dplyr::mutate(weight = dplyr::if_else(weight != 0, log(weight), weight)) |>
+    igraph::graph_from_data_frame() # Log weigths to get multiplicative distances
+  igraph::E(gew)$weight <- -1*igraph::E(gew)$weight
+  weight_matrix <- exp(igraph::shortest.paths(gew, mode = "out")* -1)
 
+  uuid_strings <- df |>
+    dplyr::filter(year == static_year) |>
+    dplyr::pull(uuid) |> unique()
 
-
-  uuid_strings <- df |> dplyr::filter(year == static_year) |>
-    pull(uuid) |> unique()
-
-  res <- tibble()
+  res <- dplyr::tibble()
   pb = txtProgressBar(min = 0, max = length(uuid_strings), initial = 0)
   for(j in 1:length(uuid_strings)){
     setTxtProgressBar(pb,j)
@@ -62,29 +74,23 @@ area_weighted_synthetic_brds <- function(df, static_year, ...){
     if(length(ancestor_uuids) == 0){
       country_res <- df |>
         dplyr::filter(uuid == uuid_str) |>
-        rename(node = uuid) |>
-        select(node, year, low, high, best) |>
-        mutate(low = as.integer(low),
-               high = as.integer(high),
-               best = as.integer(best)) |>
+        dplyr::rename(node = uuid) |>
         mutate(gwcode = stringr::str_remove(node, "-[0-9]*") |> as.integer())
     } else{
       weights <- weight_matrix[rownames(weight_matrix) %in% c(uuid_str, ancestor_uuids), colnames(weight_matrix) == uuid_str]
-      country_res <- tibble()
+      country_res <- dplyr::tibble()
       for(i in 1:length(weights)){
         country <- names(weights)[i]
-        sdf <- df |> dplyr::filter(uuid == country)
-        sdf <- sdf |> mutate(high = high * weights[i],
-                             low = low * weights[i],
-                             best = best * weights[i],
-                             node = uuid_str)
-        country_res <- bind_rows(country_res, sdf) |>
-          group_by(node, year) |>
-          summarize(low = sum(low) |> as.integer(),
-                    high = sum(high) |> as.integer(),
-                    best = sum(best) |> as.integer(), .groups = "drop_last") |>
-          mutate(gwcode = stringr::str_remove(node, "-[0-9]*") |> as.integer())
+        sdf <- df |> dplyr::filter(duuid == country) |>
+          dplyr::mutate(dplyr::across(-dplyr::any_of(c("gwcode", "year", "fid", "duuid", "uuid")), function(x) x*weights[i])) |>
+          dplyr::mutate(node = uuid_str)
+
+        country_res <- dplyr::bind_rows(country_res, sdf)
       }
+      country_res <- country_res |>
+        dplyr::group_by(node, year) |>
+        dplyr::summarize(dplyr::across(-dplyr::any_of(c("gwcode", "year", "fid", "duuid", "uuid")), .fns = sum), .groups = "drop_last")
+
     }
     res <- dplyr::bind_rows(res, country_res)
     close(pb)
