@@ -107,3 +107,26 @@
 #'
 #' @format A named vector
 "custom_gwcode_matches"
+
+#' Notes on territorial inclusion in V-Dem
+#'
+#' This coding is based on `https://www.v-dem.net/documents/40/v-dem_countryunit_v14.pdf`. In a country entry, there are
+#' sometimes "notes" on what territories that are included in the coding and not. This dataset just structure this. Certain
+#' times, the note lack information, meaning that I've had to cross-reference with other information in the document.
+#'
+#' Throughout the document, there is sometimes ambiguity as to whether the from and to years are included (e.g., >=) or excluded (e.g., >).
+#' V-Dem seems content with having overlap of entities they code.
+#'
+#' @format A data frame with 211 rows and 9 columns:
+#' \describe{
+#'  \item{vdem_id}{The country_id used in V-Dem}
+#'  \item{vdem_name}{The counry_name used in V-Dem}
+#'  \item{from}{The start year of the inclusion/exclusion interval}
+#'  \item{to}{The end year of the inclusion/exclusion interval}
+#'  \item{includes}{A territorial entity that is included into the coding of vdem_name. I've used the official vdem_name if applicable.}
+#'  \item{not_include}{The name of the territorial entity that is not included into the coding of vdem_name. I've used the official vdem_name if applicable.}
+#'  \item{include_id}{The id of the territorial entity that is included into the coding of vdem_name. I've used the official vdem_id if applicable.}
+#'  \item{not_include_id}{The id of the territorial entity that is not included into the coding of vdem_name. I've used the official vdem_id if applicable.}
+#'  \item{notes}{Notes about territorial dependencies that are more complex than what could be represented in the table (e.g., "X only includes Y").}
+#' }
+"vdem_notes"

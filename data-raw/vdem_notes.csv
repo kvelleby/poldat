@@ -1,0 +1,212 @@
+vdem_id;vdem_name;from;to;includes;not_include;include_id;not_include_id;notes
+38;Ethiopia;1952;1993;Eritrea;;115;;
+38;Ethiopia;1889;1920;Shewa;;;;
+38;Ethiopia;1875;1884;;Harar;;;
+130;Somalia;1900;1960;Puntland;;;;
+130;Somalia;1991;2024;Puntland;;;;
+130;Somalia;1900;1960;;Somaliland;;139;
+130;Somalia;1991;2024;;Somaliland;;139;
+47;Tanzania;1914;1963;Tanganykia;;;;
+47;Tanzania;1964;2024;Tanzania;;47;;
+47;Tanzania;1964;2024;;Zanzibar;;236;
+47;Tanzania;1964;2024;;Pemba;;;
+236;Zanzibar;1856;1895;Coastal area of Kenya and Tanzania;;;;
+31;Senegal;1959;1960;;Mali;;28;Mali Federation
+31;Senegal;1982;1989;;Senegambia;;;
+134;Togo;1916;1959;;British Togoland;;;
+78;Guatemala;1789;1822;Chipas;;;;
+78;Guatemala;1789;1822;Yucatan;;;;
+78;Guatemala;1789;1838;Costa Rica;;73;;
+78;Guatemala;1789;1838;Honduras;;27;;
+78;Guatemala;1789;1838;Nicaragua;;59;;
+78;Guatemala;1789;1838;El Salvador;;22;;
+66;Canada;1867;1920;New Brunswick;;;;
+66;Canada;1867;1920;Nova Scotia;;;;
+66;Canada;1870;1920;Manitoba;;;;
+66;Canada;1870;1920;The Northwest territories;;;;
+66;Canada;1873;1920;Prince Edward Island;;;;
+66;Canada;1907;1920;Newfoundland;;;;
+37;Argentina;1789;1816;Bolivia;;25;;
+37;Argentina;1789;1811;Paraguay;;189;;
+37;Argentina;1782;1820;Uruguay;;102;;
+37;Argentina;1852;1861;;Buenos Aires;;;
+15;Colombia;1789;1903;Panama;;92;;
+15;Colombia;1819;1930;Venezuela;;51;;
+15;Colombia;1789;1830;Ecuador;;75;;
+118;Georgia;1991;2024;Tskhinvali (South Ossetia);;;;
+118;Georgia;1993;2024;Abkhazia;;;;
+110;China;1789;1911;Mongolia;;89;;
+110;China;1789;1913;Tibet;;;;
+110;China;1913;1950;;Tibet;;;
+110;China;1789;2024;;Taiwan;;48;
+110;China;1789;2024;;Hong Kong;;167;
+110;China;1789;2024;;Macau;;;
+110;China;1932;1945;;Manchukuo;;;
+9;Japan;1879;1920;Ryukyu islands;;;;
+9;Japan;1905;1920;Southern Sakhalin;;;;
+42;South Korea;1789;1944;North Korea;;41;;
+39;India;1948;2024;Jammu and Kashmir;;;;
+39;India;1948;2024;;Azad Kashmir;;;
+39;India;1948;2024;;Gilgit-Baltistan;;;
+39;India;1858;1947;Pakistan;;29;;
+39;India;1858;1947;Bangladesh;;24;;
+58;Nepal;1789;1817;Sikkim;;;;
+29;Pakistan;1948;1970;Bangladesh;;24;;
+29;Pakistan;1948;2024;Azad Kashmir;;;;
+29;Pakistan;1948;2024;Gilgit-Baltistan;;;;
+29;Pakistan;1948;2024;;Jammu and Kashmir;;;
+177;Malaysia;1964;2024;Sabah;;;;
+177;Malaysia;1964;2024;Sarawak;;;;
+177;Malaysia;1900;2024;;Singapore;;200;
+200;Singapore;1867;1945;Malacca;;;;
+200;Singapore;1867;1945;Binding;;;;
+200;Singapore;1867;1945;Penang;;;;
+34;Vietnam;1976;2024;Republic of Vietnam;;35;;
+10;Burma/Myanmar;1824;1885;;Lower Burma;;;
+106;Azerbaijan;1992;2024;;Nagorno-Karabakh;;;
+20;United States of America;1789;2024;;American Samoa;;;+++ Overseas territories that are not states
+3;Mexico;1841;1848;;Yucatan;;;
+28;Mali;1958;1960;;Senegal;;31;Mali Federation
+152;Bulgaria;1913;1918;Western Thrace;;;;
+190;Romania;1789;1862;;;;;Only Wallachia
+190;Romania;1900;1918;;;;;Only pre-WWI territory
+190;Romania;1913;1940;Southern Dobruja;;;;
+190;Romania;1918;1944;Bassarbia;;;;
+190;Romania;1940;1947;;Northern Transylvania;;;
+190;Romania;1918;1944;Moldova;;126;;
+198;Serbia;1941;1944;;;;;Only the Territory of the Military Commander in Serbia
+198;Serbia;1815;1989;Slovenia;;202;;
+198;Serbia;1815;1991;Croatia;;154;;
+198;Serbia;1815;1991;North Macedonia;;176;;
+198;Serbia;1815;1992;Bosnia and Herzegovina;;150;;
+198;Serbia;1815;1999;Kosovo;;43;;
+154;Croatia;1941;1945;;;;;Territory of the Croatia State, not present day
+154;Croatia;1991;1998;Serbian Kranja;;;;
+154;Croatia;1991;1998;Eastern Slavonia;;;;
+157;Czechia;1939;1945;;;;;Only the Protectorate of Bohemia and Monrovia
+157;Czechia;1946;1992;Slovakia;;201;;
+157;Czechia;1918;1939;Slovakia;;201;;
+210;Hungary;1789;1918;The Banat of Temeschwar;;;;
+210;Hungary;1789;1918;Slovakia;;201;;
+210;Hungary;1867;1918;Transylvania;;;;
+210;Hungary;1867;1918;Croatia;;154;;
+126;Moldova;1990;2024;Gagauzia;;;;
+126;Moldova;1990;2024;;Transnistria;;;
+11;Russia;1789;1918;Estonia;;161;;
+11;Russia;1789;1918;Latvia;;84;;
+11;Russia;1795;1918;Lithuania;;173;;
+11;Russia;1789;1990;Belarus;;107;;
+11;Russia;1789;1918;Eastern Ukraine;;100;;
+11;Russia;1794;1918;Western Ukraine;;100;;
+11;Russia;1789;1920;Kazakhstan;;121;;
+11;Russia;1865;1920;Kokand/Fergana;;;;
+11;Russia;1876;1920;Sakhalin island;;;;
+11;Russia;1795;1807;Poland;;17;;
+11;Russia;1867;1918;Poland;;17;;
+11;Russia;1807;1917;;Finland;;163;
+11;Russia;1979;1989;;Afghanistan;;36;
+11;Russia;1941;1990;Estonia;;161;;
+11;Russia;1941;1990;Latvia;;84;;
+11;Russia;1941;1990;Lithuania;;173;;
+11;Russia;1919;1990;Ukraine;;100;;
+11;Russia;1945;1990;Moldova;;126;;
+11;Russia;1922;1990;Armenia;;105;;Transcaucasian Democratic Federative Republic 1917-1920
+11;Russia;1900;1990;Azerbaijan;;106;;Transcaucasian Democratic Federative Republic 1917-1920
+11;Russia;1900;1990;Georgia;;118;;Transcaucasian Democratic Federative Republic 1917-1920
+11;Russia;1900;1990;Kazakhstan;;121;;
+11;Russia;1900;1990;Kyrgyzstan;;122;;
+11;Russia;1900;1990;Tajikistan;;133;;
+11;Russia;1900;1990;Turkmenistan;;136;;
+11;Russia;1920;1990;Uzbekistan;;140;;
+100;Ukraine;2014;2024;;Crimean Peninsula;;;
+11;Russia;2014;2024;Crimean Peninsula;;;;
+158;Denmark;1789;1814;;Norway;;186;
+158;Denmark;1843;1899;Iceland;;168;;
+158;Denmark;1900;1920;Faroe Islands;;;;
+158;Denmark;1900;1920;Greenland;;;;
+158;Denmark;1900;1920;Iceland;;168;;
+5;Sweden;1789;2024;;Saint Barthélemy;;;
+5;Sweden;1813;1814;;Guadeloupe;;;
+361;Papal States;1860;1870;;;;;Only the region of Lazio
+21;Portugal;1789;2024;;;;;Only the European possessions of Portugal
+96;Spain;1812;1813;;Catalonia;;;
+144;Austria;1789;1867;Czechia;;157;;
+144;Austria;1789;1867;Slovenia;;202;;
+144;Austria;1789;1867;Italian Tyrol;;;;
+144;Austria;1789;1867;Herzegovina;;150;;This does not seem correct (Austria occupied the Vilayet of Bosnia as part of the Treaty of Berlin in 1878, and annexed it in 1908).
+144;Austria;1867;1918;Czechia;;157;;
+144;Austria;1867;1918;Slovenia;;202;;
+144;Austria;1867;1918;Italian Tyrol;;;;
+148;Belgium;1789;2024;;;;;Only the European possessions of Belgium
+76;France;1789;2024;;;;;Only the European possessions of France, e.g., not even the overseas departments and territories
+76;France;1795;1814;Luxembourg;;174;;
+76;France;1795;1814;Belgium;;148;;
+76;France;1797;1813;Achen;;;;
+76;France;1801;1814;Salm-Salm;;;;
+76;France;1801;1814;Salm-Grumbach;;;;
+76;France;1801;1814;Mainz;;;;
+76;France;1801;1814;Speyer;;;;
+76;France;1801;1814;Trier;;;;
+76;France;1807;1814;Kniphausen;;;;
+76;France;1808;1813;Catalonia;;;;
+76;France;1810;1813;Netherlands;;91;;
+76;France;1810;1813;Lübeck;;;;
+76;France;1810;1813;Bremen;;;;
+76;France;1810;1813;Oldenburg;;;;
+76;France;1810;1813;Elbe-Inférieure;;;;
+76;France;1810;1813;Westphalia Nord;;;;
+76;France;1810;1813;Westphalia Weser;;;;
+76;France;1810;1813;Westphalia Aller;;;;
+76;France;1813;1814;Hamburg;;;;
+77;Germany;1938;1945;Austria;;144;;
+77;Germany;1949;1990;;German Democratic Republic;;137;
+77;Germany;1789;1867;;;;;Only Prussia
+77;Germany;1867;1871;;;;;North German Confederation
+81;Ireland;1919;2024;;Northern Ireland;;;
+91;Netherlands;1789;2024;;;;;Only the European possessions of Netherlands
+91;Netherlands;1815;1830;Belgium;;148;;
+91;Netherlands;2010;2024;Bonaire;;;;
+91;Netherlands;2010;2024;Sint Eustatius;;;;
+91;Netherlands;2010;2024;Saba;;;;
+101;United Kingdom;1789;2024;;;;;Does not include overseas colonies and protectorates
+101;United Kingdom;1801;1923;Ireland;;81;;
+13;Egypt;1831;1841;Hejaz;;;;
+13;Egypt;1831;1841;Syria;;97;;
+13;Egypt;1831;1841;Lebanon;;44;;
+13;Egypt;1831;1841;Palestine;;209;;
+13;Egypt;1789;2024;;Sudan;;33;
+79;Iran;1789;1803;;Khorasan;;;
+79;Iran;1791;1813;Azerbaijan;;106;;
+169;Israel;1967;2014;Golan Heights;;;;
+169;Israel;1967;2014;East Jerusalem;;;;
+169;Israel;1967;2014;;Sinai Peninsula;;;
+169;Israel;1982;2000;;South Lebanon;;;
+169;Israel;1978;1978;;South Lebanon;;;
+169;Israel;2006;2006;;South Lebanon;;;
+169;Israel;1948;2024;;Palestine/West Bank;;128;
+169;Israel;1948;2024;;Palestine/Gaza;;138;
+83;Jordan;1950;1967;Palestine/West Bank;;128;;
+124;Libya;1789;1933;;;;;Only Libyan region Tripolitana is coded
+90;Morocco;1912;1955;;Spanish Sahara;;;Spanish Sahara was part of the historical V-Dem coding for 1912-1920
+90;Morocco;1956;2024;;Western Sahara;;;
+187;Oman;1789;1855;Zanzibar;;236;;
+187;Oman;1792;1920;Gwadar;;;;
+187;Oman;1789;1820;;Imamate of Oman;;;
+187;Oman;1920;1955;;Imamate of Oman;;;
+138;Palestine/Gaza;2007;2024;;Area C;;;
+128;Palestine/West Bank;1967;2006;Palestine/Gaza;;138;;
+128;Palestine/West Bank;1994;2024;;Area C;;;
+23;South Yemen;1900;1962;;;;;Only includes Aden and immediate surroundings
+23;South Yemen;1963;1967;;The Protectorate of South Arabia;;;
+97;Syria;1922;1924;;;;;Only includes the State of Damascus, Alawite State and State of Aleppo
+97;Syria;1922;1930;;Jabal al Druze State;;;
+97;Syria;1924;1930;;;;;Only includes the State of Damascus and State of Aleppo
+97;Syria;1924;1930;;Alawite State;;;
+97;Syria;1958;1961;;;;;Syrian part of United Arab Republic
+97;Syria;1967;2024;;Golan Heights;;;
+99;Turkey;1789;2024;;Algeria;;103;
+99;Turkey;1789;2024;;Tunisia;;98;
+99;Turkey;1789;2024;;Egypt;;13;
+99;Turkey;1789;2024;;Cyprus;;156;
+99;Turkey;1789;2024;;Kuwait;;171;
+99;Turkey;1789;2024;;Bahrain;;146;
