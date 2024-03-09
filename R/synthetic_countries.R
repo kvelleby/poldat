@@ -1,5 +1,5 @@
 get_parents <- function(node, g){
-  return(igraph::as_edgelist(g) |> dplyr::as_tibble(.name_repair = NULL) |> dplyr::filter(V2 == node) |> dplyr::pull(V1))
+  return(igraph::as_edgelist(g) |> dplyr::as_tibble() |> dplyr::filter(V2 == node) |> dplyr::pull(V1))
 }
 
 lookup_edge_values <- function(parent, variable, g){
@@ -32,25 +32,18 @@ edge_weights_as_childrens_share_of_variable <- function(g, variable){
 }
 
 area_weighted_synthetic_brds <- function(df, static_year, ...){
-  if(!("year" %in% names(df))){
-    stop("Variable 'year' must be present in df.")
-  }
-  if(!("gwcode" %in% names(df))){
-    stop("Variable 'gwcode' must be present in df.")
-  }
+  df |> dplyr::select(all_of(c("gwcode", "year"))) # Simple way to test expectations of data.frame
+  min_year <- min(df$year)
 
   gw <- cshp_gw_modifications(...)
   g <- territorial_dependencies(gw)
   dynamic_skeleton <- gw_panel(gw, time_interval = "year") |>
-    dplyr::mutate(duuid = paste(gwcode, fid, sep = "-")) |>
-    dplyr::select(gwcode, year, duuid)
-  static_skeleton <- gw_panel(gw, time_interval = "year", static_date = as.Date("2019-01-01"))
-  static_skeleton <- dplyr::left_join(static_skeleton, dynamic_skeleton, by = c("gwcode", "year"))
+    dplyr::mutate(uuid = paste(gwcode, fid, sep = "-")) |>
+    dplyr::select(gwcode, year, uuid)
+  #static_skeleton <- gw_panel(gw, time_interval = "year", static_date = as.Date(paste0(static_year, "-01-01")))
+  #static_skeleton <- dplyr::left_join(static_skeleton, dynamic_skeleton, by = c("gwcode", "year"))
 
-  df_names <- names(df)
-  df <- dplyr::left_join(static_skeleton, df, by = c("gwcode", "year")) |>
-    dplyr::select(dplyr::all_of(c(df_names, "fid", "duuid"))) |>
-    dplyr::mutate(uuid = paste(gwcode, fid, sep = "-"))
+  df <- dplyr::left_join(dynamic_skeleton, df, by = c("gwcode", "year"))
 
   ew <- edge_weights_as_childrens_share_of_variable(g, "a_i")
 
@@ -75,25 +68,32 @@ area_weighted_synthetic_brds <- function(df, static_year, ...){
       country_res <- df |>
         dplyr::filter(uuid == uuid_str) |>
         dplyr::rename(node = uuid) |>
-        mutate(gwcode = stringr::str_remove(node, "-[0-9]*") |> as.integer())
+        dplyr::mutate(gwcode = stringr::str_remove(node, "-[0-9]*") |> as.integer())
     } else{
       weights <- weight_matrix[rownames(weight_matrix) %in% c(uuid_str, ancestor_uuids), colnames(weight_matrix) == uuid_str]
       country_res <- dplyr::tibble()
       for(i in 1:length(weights)){
         country <- names(weights)[i]
-        sdf <- df |> dplyr::filter(duuid == country) |>
-          dplyr::mutate(dplyr::across(-dplyr::any_of(c("gwcode", "year", "fid", "duuid", "uuid")), function(x) x*weights[i])) |>
+        sdf <- df |> dplyr::filter(uuid == country) |>
+          dplyr::mutate(dplyr::across(-dplyr::any_of(c("gwcode", "year", "fid", "uuid")), function(x) x*weights[i])) |>
           dplyr::mutate(node = uuid_str)
 
         country_res <- dplyr::bind_rows(country_res, sdf)
       }
       country_res <- country_res |>
         dplyr::group_by(node, year) |>
-        dplyr::summarize(dplyr::across(-dplyr::any_of(c("gwcode", "year", "fid", "duuid", "uuid")), .fns = sum), .groups = "drop_last")
+        dplyr::summarize(dplyr::across(-dplyr::any_of(c("gwcode", "year", "fid", "uuid")), .fns = ~ sum(.x, na.rm = TRUE)), .groups = "drop_last")
 
     }
-    res <- dplyr::bind_rows(res, country_res)
-    close(pb)
+    res <- dplyr::bind_rows(res, country_res) |> dplyr::mutate(gwcode = stringr::str_remove(node, "-[0-9]*") |> as.integer())
   }
+  res <- res |>
+    dplyr::select(-any_of(c("node", "fid", "uuid"))) |>
+    dplyr::group_by(gwcode, year) |>
+    dplyr::summarize(dplyr::across(everything(), .fns = ~ mean(.x, na.rm = TRUE)), .groups = "drop_last")
+  res <- dplyr::left_join(static_skeleton |> dplyr::select(gwcode, year), res, by = c("gwcode", "year")) |>
+    dplyr::filter(year >= min_year)
+  close(pb)
+
   return(res)
 }

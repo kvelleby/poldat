@@ -22,7 +22,7 @@
 #'  be used to select a range of variables. See `vdemdata::codebook$clean_tag` for valid expressions.
 #' @param .fun The function used to summarize observations for mergers.
 #' @param impute If true the following things are added:
-#'   Uses Jordan coding for West Bank between 1950-67.
+#'   Includes all observations from-to as coded in poldat::vdem_notes.
 #'   Uses USA coding for Puerto Rico.
 #'   Uses France coding for New Caledonia and French Polynesia.
 #'   Belize, Bahamas, Western Sahara, and Brunei are kept missing.
@@ -35,16 +35,50 @@
 #' @references Lührmann, Anna, Nils Düpont, Masaaki Higashijima, Yaman Berker Kavasoglu, Kyle L. Marquardt, Michael Bernhard, Holger Döring, Allen Hicken, Melis Laebens, Staffan I. Lindberg, Juraj Medzihorsky, Anja Neundorf, Ora John Reuter, Saskia Ruth-Lovell, Keith R. Weghorst, Nina Wiesehomeier, Joseph Wright, Nazifa Alizada, Paul Bederke, Lisa Gastaldi, Sandra Grahn, Garry Hindle, Nina Ilchenko, Johannes von Römer, Steven Wilson, Daniel Pemstein, Brigitte Seim. 2020. Varieties of Party Identity and Organization (V-Party) Dataset V1. Varieties of Democracy (V-Dem) Project. https://doi.org/10.23696/vpartydsv1
 #' @source https://www.v-dem.net/
 get_vdem <- function(..., .fun = mean, na.rm = TRUE, impute = TRUE){
-  df <- vdemdata::vdem |> dplyr::select(country_name, country_text_id, country_id, year, ...) |> dplyr::filter(year >= 1946)
+  df <- vdemdata::vdem |> dplyr::select(country_name, country_id, year, ...) |> dplyr::filter(year >= 1946)
 
-  if(impute){
-    missing_west_bank <- df |> dplyr::filter(country_name == "Jordan", year >= 1950, year < 1967)
-    missing_west_bank$country_name <- "Palestine/West Bank"
-    missing_west_bank$country_text_id <- "PSE"
-    missing_west_bank$country_id <- 128
-    df <- dplyr::bind_rows(df, missing_west_bank)
+  coalesce_var <- function(df, varname) {
+    x <- glue::glue("{varname}.x")
+    y <- glue::glue("{varname}.y")
+    dplyr::mutate(df, !!varname := dplyr::coalesce(!!rlang::sym(x), !!rlang::sym(y)))
   }
 
+
+  coalesce_vars <- function(df_a, df_b, by = "year", ...){
+    coalesce_dataframe <- function(varname, df_a, df_b, by = by) dplyr::full_join(df_a, df_b, by = by) |> dplyr::select(starts_with(varname)) |> coalesce_var(varname) |> dplyr::select(all_of(varname))
+
+    years <- dplyr::full_join(df_a, df_b, by = "year") |> dplyr::select(year)
+
+    varnames <- rlang::quos(...)
+    varnames <- lapply(varnames, rlang::as_name)
+    res <- lapply(varnames, coalesce_dataframe, df_a = df_a, df_b = df_b, by = "year")
+    res <- dplyr::bind_cols(res)
+    res <- dplyr::bind_cols(years, res)
+    return(res)
+  }
+
+  if(impute){
+    to_include <- vdem_notes |> dplyr::filter(!is.na(include_id))
+    for(i in 1:nrow(to_include)){
+      obs <- to_include[i,]
+      maybe_missing <- df |> dplyr::filter(country_id == obs$vdem_id, year >= obs$from, year <= obs$to)
+
+      if(nrow(maybe_missing)>0){
+        maybe_missing <- maybe_missing |> dplyr::select(-any_of(c("country_name", "country_id")))
+        included_data <- df |> dplyr::filter(country_id == obs$include_id, year >= obs$from, year < obs$to)
+        if(nrow(included_data)>0){
+          included_data <- included_data |> dplyr::select(-any_of(c("country_name", "country_id")))
+          full_series <- coalesce_vars(included_data, maybe_missing, by = "year", ...)
+          full_series$country_name <- obs$includes
+          full_series$country_id <- obs$include_id
+          full_series <- full_series |> dplyr::select(country_name, country_id, year, ...)
+          df <- df |> dplyr::filter(country_id != obs$include_id)
+          df <- dplyr::bind_rows(df, full_series)
+          rm(included_data, maybe_missing)
+        }
+      }
+    }
+  }
 
   df$country_name <- countrycode::countrycode(df$country_id, origin = "vdem", destination = "country.name",
                                               custom_match = c("128" = "Palestine/West Bank",
