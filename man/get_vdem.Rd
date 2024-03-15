@@ -7,7 +7,7 @@
 https://www.v-dem.net/
 }
 \usage{
-get_vdem(..., .fun = mean, na.rm = TRUE, impute = TRUE)
+get_vdem(..., .fun = mean, na.rm = TRUE, impute = TRUE, merge_countries = TRUE)
 }
 \arguments{
 \item{...}{<\code{\link[=dplyr::dplyr_tidy_select]{tidy-select}}> One or more unquoted
@@ -18,10 +18,22 @@ be used to select a range of variables. See `vdemdata::codebook$clean_tag` for v
 \item{.fun}{The function used to summarize observations for mergers.}
 
 \item{impute}{If true the following things are added:
-Uses Jordan coding for West Bank between 1950-67.
+Includes data from the larger state 'vdem_id' in the from-to period for all states with include_id as coded in poldat::vdem_notes.
 Uses USA coding for Puerto Rico.
 Uses France coding for New Caledonia and French Polynesia.
 Belize, Bahamas, Western Sahara, and Brunei are kept missing.}
+
+\item{merge_countries}{If true, the following countries are merged (with equal weights using he .fun):
+West Bank and Gaza from 1967 onwards into 699.
+Czechia and Slovakia (Czechoslovakia) from 1946 to 1992.
+Bosnia and Herzegovina, Kosovo, North Macedonia, Montenegro, Serbia, and Croatia (Yugoslavia) from 1946-1990
+Bosnia and Herzegovina, Kosovo, Montenegro, Serbia, Croatia (Yugoslavia) in 1991
+Kosovo, Montenegro, Serbia (Yugoslavia) from 1992-2005
+Serbia and Kosovo (Serbia) from 2006-2007
+Subsequently, only observations that fit the gw_panel template with gw <- cshp_gw_modifications() are included
+E.g., instead of having both North and South Vietnam from 1946-present, this will remove South Vietnam after 1974.
+Merging countries like this makes sure that the double observations from the impute step are removed again,
+and that the country structure is identical to the modified cShapes.}
 }
 \description{
 Use `vdemdata::vdem`, but matches (as best as possible) to the cShapes system used in poldat.
@@ -39,6 +51,8 @@ Current states with > 250 000 population that are missing in V-Dem:
  Puerto Rico, Bahamas, Belize, Western Sahara, Brunei, New Caledonia and Dependencies, French Polynesia
 
 Filter data before 1946 for the moment (as there are likely many more inconsistencies before then).
+
+More on the imputation idea: When a territory is included in another state-coding, there is no data for that territory separately in V-Dem.
 }
 \examples{
 df <- get_vdem(v2x_libdem)

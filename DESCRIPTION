@@ -18,6 +18,7 @@ Imports:
     janitor,
     readxl,
     readr,
+    hablar,
     memoise,
     rappdirs,
     cachem,

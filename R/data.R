@@ -74,30 +74,27 @@
 #' @source [cShapes 2.0](https://icr.ethz.ch/data/cshapes/)
 "ucdpbrds"
 
-#' A battle-deaths static-country-year panel data from 1946-2022
+#' Panel data with static country ids
 #'
+#' Uses `area_weighted_synthetic_data(static_year = 2019)` to create panel data with static country ids.
+#' V-Dem data using `get_vdem()` and UCDP battle-related deaths from `ucdpbrds`. Please see these
+#' functions for more details and references.
 #'
-#' PRIO Battle-deaths 3.1 and UCDP GED 23.1 with cShapes 2.0 and manual coding of battle-locations and fatality shares.
-#' The data base itself of static country borders (as they were 2019-01-01), and estimate "synthetic" versions of these countries
-#' before they existed. For the period 1989-2022, when using UCDP GED, it is simple to identify country-id based on the event location. For the period 1946-1988, I base myself off the manual coding of battle-locations and fatality shares.
-#' Then, I distribute battle-deaths according to the share of area at the time that
-#' intersects with the country-borders as they existed in 2019-01-01. Clearly, this can introduce coding errors, but until
-#' we have sub-national data of battle-locations, coding this in other ways is difficult.
-#'
-#' See `ucdpbrds` for more information.
-#'
-#' @format A data frame with 14037 rows and 5 columns:
+#' @format A data frame with 13783 rows and 7 columns:
 #' \describe{
 #'   \item{gwcode}{Slightly modified cShapes 2.0 gwcodes}
 #'   \item{year}{The year of the events}
+#'   \item{best}{Best estimate of battle-deaths}
 #'   \item{low}{Low estimate of battle-deaths}
 #'   \item{high}{High estimate of battle-deaths}
-#'   \item{best}{Best estimate of battle-deaths}
+#'   \item{v2x_libdem}{Liberal democracy score}
+#'   \item{v2x_regime}{Regimes of the World class}
 #' }
 #' @source [PRIO Battle-deaths 3.1](https://www.prio.org/data/1)
 #' @source [UCDP GED 23.1](https://ucdp.uu.se)
 #' @source [cShapes 2.0](https://icr.ethz.ch/data/cshapes/)
-"ucdpbrds_static"
+#' @source [Varieties of Democracy 14](https://v-dem.net/)
+"static_world"
 
 #' Custom country to gwcode matches
 #'

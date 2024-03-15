@@ -31,18 +31,35 @@ edge_weights_as_childrens_share_of_variable <- function(g, variable){
   return(lapply(nodes, edge_weight_as_childrens_share_of_variable, variable = variable, g = g) |> dplyr::bind_rows())
 }
 
-area_weighted_synthetic_brds <- function(df, static_year, ...){
+#' Calculate area weighted synthetic static panel data
+#'
+#' This function creates a static-world panel data.frame from dynamic gwcode-year panel-data by weighing
+#' the data from the ancestors of countries that existed at the end of `static_year` using the shares of
+#' ancestor's territories that can be traced to the current countries.
+#'
+#' @param df A dynamic panel-data with gwcode and year plus any additional variables.
+#' @param static_year An integer of the year you want to create a static world template based on.
+#' @param ... Additional parameters, please not use yet as they might not work properly.
+#' @return A static panel-data data.frame
+#' @export
+#'
+#' @examples
+#' vdem_dynamic <- get_vdem(v2x_libdem, v2x_regime)
+#' vdem_static <- area_weighted_synthetic_data(vdem_dynamic, 2019)
+#'
+area_weighted_synthetic_data <- function(df, static_year, ...){
+  # Returns 0 when should return NA.
   df |> dplyr::select(all_of(c("gwcode", "year"))) # Simple way to test expectations of data.frame
   min_year <- min(df$year)
+
+  start_date <- as.Date(paste0(min(df$year),"-01-01"))
+  end_date <- as.Date(paste0(max(df$year),"-12-31"))
 
   gw <- cshp_gw_modifications(...)
   g <- territorial_dependencies(gw)
   dynamic_skeleton <- gw_panel(gw, time_interval = "year") |>
     dplyr::mutate(uuid = paste(gwcode, fid, sep = "-")) |>
     dplyr::select(gwcode, year, uuid)
-  #static_skeleton <- gw_panel(gw, time_interval = "year", static_date = as.Date(paste0(static_year, "-01-01")))
-  #static_skeleton <- dplyr::left_join(static_skeleton, dynamic_skeleton, by = c("gwcode", "year"))
-
   df <- dplyr::left_join(dynamic_skeleton, df, by = c("gwcode", "year"))
 
   ew <- edge_weights_as_childrens_share_of_variable(g, "a_i")
@@ -82,7 +99,7 @@ area_weighted_synthetic_brds <- function(df, static_year, ...){
       }
       country_res <- country_res |>
         dplyr::group_by(node, year) |>
-        dplyr::summarize(dplyr::across(-dplyr::any_of(c("gwcode", "year", "fid", "uuid")), .fns = ~ sum(.x, na.rm = TRUE)), .groups = "drop_last")
+        dplyr::summarize(dplyr::across(-dplyr::any_of(c("gwcode", "year", "fid", "uuid")), .fns = ~ hablar::sum_(.x)), .groups = "drop_last") # hablar::sum_ returns NA instead of 0 if all are NA
 
     }
     res <- dplyr::bind_rows(res, country_res) |> dplyr::mutate(gwcode = stringr::str_remove(node, "-[0-9]*") |> as.integer())
@@ -90,7 +107,11 @@ area_weighted_synthetic_brds <- function(df, static_year, ...){
   res <- res |>
     dplyr::select(-any_of(c("node", "fid", "uuid"))) |>
     dplyr::group_by(gwcode, year) |>
-    dplyr::summarize(dplyr::across(everything(), .fns = ~ mean(.x, na.rm = TRUE)), .groups = "drop_last")
+    dplyr::summarize(dplyr::across(everything(), .fns = ~ hablar::sum_(.x)), .groups = "drop_last") # hablar::mean_ returns NA instead of NaN if all are NA
+
+
+
+  static_skeleton <- gw_panel(gw, time_interval = "year", begin = start_date, stop = end_date, static_date = as.Date(paste0(static_year, "-01-01")))
   res <- dplyr::left_join(static_skeleton |> dplyr::select(gwcode, year), res, by = c("gwcode", "year")) |>
     dplyr::filter(year >= min_year)
   close(pb)
