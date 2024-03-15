@@ -385,6 +385,22 @@
       "Repository": "RSPM",
       "Hash": "f7736a18de97dea803bde0a2daaafb27"
     },
+    "forcats": {
+      "Package": "forcats",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "cli",
+        "glue",
+        "lifecycle",
+        "magrittr",
+        "rlang",
+        "tibble"
+      ],
+      "Hash": "1a0a9a3d5083d0d573c4214576f1e690"
+    },
     "fs": {
       "Package": "fs",
       "Version": "1.6.3",
@@ -535,6 +551,27 @@
         "purrr"
       ],
       "Hash": "c7a6a49207405553fd26eff865d94360"
+    },
+    "haven": {
+      "Package": "haven",
+      "Version": "2.5.4",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "cli",
+        "cpp11",
+        "forcats",
+        "hms",
+        "lifecycle",
+        "methods",
+        "readr",
+        "rlang",
+        "tibble",
+        "tidyselect",
+        "vctrs"
+      ],
+      "Hash": "9171f898db9d9c4c1b2c745adc2c1ef1"
     },
     "hms": {
       "Package": "hms",
@@ -890,9 +927,9 @@
     },
     "readr": {
       "Package": "readr",
-      "Version": "2.1.4",
+      "Version": "2.1.5",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "R6",
@@ -909,7 +946,7 @@
         "utils",
         "vroom"
       ],
-      "Hash": "b5047343b3825f37ad9d3b5d89aa1078"
+      "Hash": "9de96463d2117f6ac49980577939dfb3"
     },
     "readxl": {
       "Package": "readxl",
@@ -1273,14 +1310,14 @@
     },
     "vdemdata": {
       "Package": "vdemdata",
-      "Version": "13.0",
+      "Version": "14.0",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "vdeminstitute",
       "RemoteRepo": "vdemdata",
       "RemoteRef": "master",
-      "RemoteSha": "3030ccf0f94278e268ee479b3264db1ace28196e",
+      "RemoteSha": "102fb9e86da1f35a9788184d00e26a1b2e9c18b2",
       "Requirements": [
         "R",
         "dplyr",
@@ -1289,7 +1326,7 @@
         "tidyr",
         "tidyselect"
       ],
-      "Hash": "8faeea2df470f7b85880141b373811c7"
+      "Hash": "cb800388b339940dbd438e4b75d170b9"
     },
     "viridisLite": {
       "Package": "viridisLite",

@@ -68,14 +68,26 @@ vietnam <- c("Vietnam" = 816) # This is often coded as 817
 yemen <- c("Yemen" = 678)
 kosovo <- c("Kosovo" = 347)
 
-microstates <- readr::read_tsv(url("http://ksgleditsch.com/data/microstates.txt"))
+
+tmp <- tempfile()
+"http://ksgleditsch.com/data/microstates.txt" |>
+  httr2::request() |>
+  httr2::req_perform(path = tmp)
+microstates <- read.csv(tmp, sep = "\t")
+unlink(tmp)
+
 microstates$countryname <- iconv(microstates$countryname, from = "latin1")
 microstates <- microstates |> dplyr::select(countryname, gwcode = statenumber)
 
 ms <- microstates$gwcode
 names(ms) <- microstates$countryname
 
-sao_tome <- c("São Tomé & Príncipe" = 403) # Other ways to write...
+
+# Other ways to write...
+sao_tome <- c("São Tomé & Príncipe" = 403)
+st_kitts <- c("St. Kitts & Nevis" = 60)
+st_lucia <- c("St. Lucia" = 56)
+st_vincent <- c("St. Vincent & Grenadines" = 57)
 
 
 custom_gwcode_matches <- c(french_overseas_regions,
@@ -92,6 +104,9 @@ custom_gwcode_matches <- c(french_overseas_regions,
                             vietnam,
                             kosovo,
                             ms,
-                            sao_tome)
+                            sao_tome,
+                           st_kitts,
+                           st_lucia,
+                           st_vincent)
 
 usethis::use_data(custom_gwcode_matches, overwrite = TRUE)
