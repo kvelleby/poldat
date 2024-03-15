@@ -49,7 +49,7 @@ edge_weights_as_childrens_share_of_variable <- function(g, variable){
 #'
 area_weighted_synthetic_data <- function(df, static_year, ...){
   # Returns 0 when should return NA.
-  df |> dplyr::select(all_of(c("gwcode", "year"))) # Simple way to test expectations of data.frame
+  df |> dplyr::select(dplyr::all_of(c("gwcode", "year"))) # Simple way to test expectations of data.frame
   min_year <- min(df$year)
 
   start_date <- as.Date(paste0(min(df$year),"-01-01"))
@@ -58,22 +58,22 @@ area_weighted_synthetic_data <- function(df, static_year, ...){
   gw <- cshp_gw_modifications(...)
   g <- territorial_dependencies(gw)
   dynamic_skeleton <- gw_panel(gw, time_interval = "year") |>
-    dplyr::mutate(uuid = paste(gwcode, fid, sep = "-")) |>
-    dplyr::select(gwcode, year, uuid)
+    dplyr::mutate(uuid = paste(.data$gwcode, .data$fid, sep = "-")) |>
+    dplyr::select(.data$gwcode, .data$year, .data$uuid)
   df <- dplyr::left_join(dynamic_skeleton, df, by = c("gwcode", "year"))
 
   ew <- edge_weights_as_childrens_share_of_variable(g, "a_i")
 
   # https://stackoverflow.com/questions/50003449/multiplicative-distance-between-graph-nodes
   gew <- ew |>
-    dplyr::mutate(weight = dplyr::if_else(weight != 0, log(weight), weight)) |>
+    dplyr::mutate(weight = dplyr::if_else(.data$weight != 0, log(.data$weight), .data$weight)) |>
     igraph::graph_from_data_frame() # Log weigths to get multiplicative distances
   igraph::E(gew)$weight <- -1*igraph::E(gew)$weight
   weight_matrix <- exp(igraph::shortest.paths(gew, mode = "out")* -1)
 
   uuid_strings <- df |>
-    dplyr::filter(year == static_year) |>
-    dplyr::pull(uuid) |> unique()
+    dplyr::filter(.data$year == static_year) |>
+    dplyr::pull(.data$uuid) |> unique()
 
   res <- dplyr::tibble()
   pb = txtProgressBar(min = 0, max = length(uuid_strings), initial = 0)
@@ -83,37 +83,37 @@ area_weighted_synthetic_data <- function(df, static_year, ...){
     ancestor_uuids <- igraph::neighborhood(g, uuid_str, order = 100, mindist = 1, mode = "in")[[1]] |> names()
     if(length(ancestor_uuids) == 0){
       country_res <- df |>
-        dplyr::filter(uuid == uuid_str) |>
-        dplyr::rename(node = uuid) |>
-        dplyr::mutate(gwcode = stringr::str_remove(node, "-[0-9]*") |> as.integer())
+        dplyr::filter(.data$uuid == uuid_str) |>
+        dplyr::rename(node = .data$uuid) |>
+        dplyr::mutate(gwcode = stringr::str_remove(.data$node, "-[0-9]*") |> as.integer())
     } else{
       weights <- weight_matrix[rownames(weight_matrix) %in% c(uuid_str, ancestor_uuids), colnames(weight_matrix) == uuid_str]
       country_res <- dplyr::tibble()
       for(i in 1:length(weights)){
         country <- names(weights)[i]
-        sdf <- df |> dplyr::filter(uuid == country) |>
+        sdf <- df |> dplyr::filter(.data$uuid == country) |>
           dplyr::mutate(dplyr::across(-dplyr::any_of(c("gwcode", "year", "fid", "uuid")), function(x) x*weights[i])) |>
           dplyr::mutate(node = uuid_str)
 
         country_res <- dplyr::bind_rows(country_res, sdf)
       }
       country_res <- country_res |>
-        dplyr::group_by(node, year) |>
+        dplyr::group_by(.data$node, .data$year) |>
         dplyr::summarize(dplyr::across(-dplyr::any_of(c("gwcode", "year", "fid", "uuid")), .fns = ~ hablar::sum_(.x)), .groups = "drop_last") # hablar::sum_ returns NA instead of 0 if all are NA
 
     }
-    res <- dplyr::bind_rows(res, country_res) |> dplyr::mutate(gwcode = stringr::str_remove(node, "-[0-9]*") |> as.integer())
+    res <- dplyr::bind_rows(res, country_res) |> dplyr::mutate(gwcode = stringr::str_remove(.data$node, "-[0-9]*") |> as.integer())
   }
   res <- res |>
-    dplyr::select(-any_of(c("node", "fid", "uuid"))) |>
-    dplyr::group_by(gwcode, year) |>
-    dplyr::summarize(dplyr::across(everything(), .fns = ~ hablar::sum_(.x)), .groups = "drop_last") # hablar::mean_ returns NA instead of NaN if all are NA
+    dplyr::select(-dplyr::any_of(c("node", "fid", "uuid"))) |>
+    dplyr::group_by(.data$gwcode, .data$year) |>
+    dplyr::summarize(dplyr::across(dplyr::everything(), .fns = ~ hablar::sum_(.x)), .groups = "drop_last") # hablar::mean_ returns NA instead of NaN if all are NA
 
 
 
   static_skeleton <- gw_panel(gw, time_interval = "year", begin = start_date, stop = end_date, static_date = as.Date(paste0(static_year, "-01-01")))
-  res <- dplyr::left_join(static_skeleton |> dplyr::select(gwcode, year), res, by = c("gwcode", "year")) |>
-    dplyr::filter(year >= min_year)
+  res <- dplyr::left_join(static_skeleton |> dplyr::select(.data$gwcode, .data$year), res, by = c("gwcode", "year")) |>
+    dplyr::filter(.data$year >= min_year)
   close(pb)
 
   return(res)

@@ -30,7 +30,9 @@ Imports:
     progress,
     rlang,
     lwgeom,
-    digest
+    digest,
+    vdemdata,
+    countrycode
 RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)
