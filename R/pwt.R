@@ -1,21 +1,25 @@
-#' Get Penn World Table data
+#' Get data from Grönigen Growth and Development Centre
 #'
-#' @param pwt_version A string with the version of PWT you want to downlaod.
+#' @param dataset A string "pwt" for Penn World Tables and "maddison" for Maddison Project data.
+#' @param version A string with the version of PWT or Maddison you want to downlaod.
 #'
-#' @return A data frame with PWT data
+#' @return A data frame with PWT or Maddison data
 #'
 #' @references Feenstra, Robert C., Robert Inklaar and Marcel P. Timmer (2015), "The Next Generation of the Penn World Table" American Economic Review, 105(10), 3150-3182, available for download at www.ggdc.net/pwt
+#' @references Maddison Project Database, version 2020. Bolt, Jutta and Jan Luiten van Zanden (2020), “Maddison style estimates of the evolution of the world economy. A new 2020 update”.
 #'
 #' @examples
-#' pwt <- get_pwt()
-get_pwt_uncached <- function(pwt_version = "10.01", gwcode = TRUE){
+#' pwt <- get_penn(dataset = "pwt", version = "10.01")
+get_ggdc_uncached <- function(dataset = "pwt", version = "10.01", gwcode = TRUE){
   url <- dplyr::case_when(
-    pwt_version == "10.01" ~ "https://dataverse.nl/api/access/datafile/354098",
-    pwt_version == "10.0" ~ "https://www.rug.nl/ggdc/docs/pwt100.dta",
-    pwt_version == "10" ~ "https://www.rug.nl/ggdc/docs/pwt100.dta",
-    pwt_version == "9.1" ~ "https://www.rug.nl/ggdc/docs/pwt91.dta",
-    pwt_version == "9.0" ~ "https://www.rug.nl/ggdc/docs/pwt90.dta",
-    .default = paste("pwt_version", pwt_version, "not supported"))
+    (dataset == "pwt" & version == "10.01") ~ "https://dataverse.nl/api/access/datafile/354098",
+    (dataset == "pwt" & version == "10.0") ~ "https://www.rug.nl/ggdc/docs/pwt100.dta",
+    (dataset == "pwt" & version == "10") ~ "https://www.rug.nl/ggdc/docs/pwt100.dta",
+    (dataset == "pwt" & version == "9.1") ~ "https://www.rug.nl/ggdc/docs/pwt91.dta",
+    (dataset == "pwt" & version == "9.0") ~ "https://www.rug.nl/ggdc/docs/pwt90.dta",
+    (dataset == "maddison" & version == "2020") ~ "https://www.rug.nl/ggdc/historicaldevelopment/maddison/data/mpd2020.dta",
+    !(dataset %in% c("pwt", "maddison")) ~ "not supported",
+    .default = paste("version", version, "not supported"))
 
   if(grepl("not supported", url)){
     stop(url)
@@ -39,9 +43,9 @@ get_pwt_uncached <- function(pwt_version = "10.01", gwcode = TRUE){
   return(df)
 }
 
-#' @describeIn get_pwt_uncached Get Penn World Table data, cached version
+#' @describeIn get_ggdc_uncached Get data from Grönigen Growth and Development Centre, cached version
 #'
 #' @export
-get_pwt <- memoise::memoise(get_pwt_uncached, cache = cachem::cache_disk(rappdirs::user_cache_dir("R-poldat")))
+get_ggdc <- memoise::memoise(get_ggdc_uncached, cache = cachem::cache_disk(rappdirs::user_cache_dir("R-poldat")))
 
 
