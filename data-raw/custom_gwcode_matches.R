@@ -3,7 +3,8 @@ french_overseas_regions <- c(
   "Guadeloupe" = 220,
   "Martinique" = 220,
   "Mayotte" = 220,
-  "Reunion" = 220
+  "Reunion" = 220,
+  "Réunion" = 220
 )
 french_overseas_collectivities <- c(
   "French Polynesia" = 960,
@@ -34,6 +35,8 @@ dutch_caribbean <- c(
 
 china_sar <- c(
   "Hong Kong SAR China" = 710,
+  "Hong Kong Special Administrative Region of China" = 710,
+  "Macao Special Administrative Region of China" = 710,
   "Macao SAR China" = 710
 )
 
@@ -59,6 +62,7 @@ palestine <- c("Palestine" = 665,
                "Palestine/West Bank" = 6631,
                "Palestine/Gaza" = 6511,
                "Occupied Palestinian Territories" = 699,
+               "Occupied Palestinian Territory" = 699,
                "Palestinian Territories" = 699,
                "West Bank" = 6631,
                "Gaza" = 6511)

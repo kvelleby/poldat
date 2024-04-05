@@ -6,6 +6,14 @@ NOTE: This package is under development. Expect this to break.
 devtools::install_github("kvelleby/poldat")
 ```
 
+Curl is needed to install RCurl required by wcde. If you do not have the curl development library, see https://stackoverflow.com/a/71048160 for how to install.
+
+For Windows users (also in the stackoverflow):
+1. Install [RTools](https://cran.r-project.org/bin/windows/Rtools)
+2. Launch RTools Bash from the Windows Menu
+3. pacman -Syuv
+4. pacman -S mingw-w64-x86_64-curl
+
 # Useage
 
 Pull the latest version of UCDP GED from their API. `get_ucdp_ged()' caches the results on disk so next time you run with  the same settings, you will get the cached version.

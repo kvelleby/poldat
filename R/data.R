@@ -78,22 +78,63 @@
 #'
 #' Uses `area_weighted_synthetic_data(static_year = 2019)` to create panel data with static country ids.
 #' V-Dem data using `get_vdem()` and UCDP battle-related deaths from `ucdpbrds`. Please see these
-#' functions for more details and references.
+#' functions for more details and references. For population and GDP estimates, this data combines
+#' several sources, using total levels of GDP and population in 2017 as basis, and growth figures.
+#' For GDP, the primary source is PWT, followed by WDI, and Maddison. For population, the primary source is
+#' WDI, followed by WCDE, and then PWT. Growth figures are calculated using the data in each dataset. Education
+#' data and age-specific demographics are taken from WCDE.
 #'
-#' @format A data frame with 13783 rows and 7 columns:
+#' @format A data frame with 13783 rows and 42 columns:
 #' \describe{
 #'   \item{gwcode}{Slightly modified cShapes 2.0 gwcodes}
 #'   \item{year}{The year of the events}
-#'   \item{best}{Best estimate of battle-deaths}
-#'   \item{low}{Low estimate of battle-deaths}
-#'   \item{high}{High estimate of battle-deaths}
-#'   \item{v2x_libdem}{Liberal democracy score}
-#'   \item{v2x_regime}{Regimes of the World class}
+#'   \item{rgdp}{Real GDP sourced from PWT, WDI, and Maddison}
+#'   \item{gdp_grwth}{Yearly rgdp growth using log-method}
+#'   \item{gdppc}{GDP per capita sourced from PWT, WDI, Maddison, and WCDE}
+#'   \item{population}{Population sourced from WDI, WCDE, PWT, and Maddison}
+#'   \item{pop_grwth}{Yearly growth in population}
+#'   \item{best}{Best estimate of battle-deaths from UCDP and PRIO}
+#'   \item{low}{Low estimate of battle-deaths from UCDP and PRIO}
+#'   \item{high}{High estimate of battle-deaths from UCDP and PRIO}
+#'   \item{v2x_libdem}{Liberal democracy score from V-Dem}
+#'   \item{v2x_regime}{Regimes of the World class from V-Dem}
+#'   \item{secprop}{The proportion of the population with completed upper secondary education from WCDE}
+#'   \item{priprop}{The proportion of the population with completed primary education from WCDE}
+#'   \item{psecprop}{The proportion of the population with completed post-secondary education from WCDE}
+#'   \item{tdr}{Total dependency ratio: (youth + elderly) / working from WCDE}
+#'   \item{ydr}{Youth dependency ratio: youth / working from WCDE}
+#'   \item{odr}{Old-age dependency ratio: elderly / working from WCDE}
+#'   \item{youth}{Population between 0-14 from WCDE}
+#'   \item{working}{Population between 15-64 from WCDE}
+#'   \item{elderly}{Population from 65+ from WCDE}
+#'   \item{wcde_pop}{Total population from WCDE}
+#'   \item{pwt_pop}{Total population from PWT}
+#'   \item{wdi_pop}{Total population from WDI}
+#'   \item{maddison_pop}{Total population from Maddison}
+#'   \item{wcde_pop_grwt}{Yearly population growth from WCDE}
+#'   \item{pwt_pop_grwt}{Yearly population growth from PWT}
+#'   \item{wdi_pop_grwt}{Yearly population growth from WDI}
+#'   \item{maddison_pop_grwt}{Yearly population growth from Maddison}
+#'   \item{rgdpna}{Real GDP from PWT}
+#'   \item{wdi_gdp_pp_con_us}{Real GDP from WDI}
+#'   \item{maddison_gdp}{Real GDP from Maddison}
+#'   \item{pwt_grwt_na}{Yearly growth in real GDP from PWT}
+#'   \item{wdi_grwt_con}{Yearly growth in real GDP from WDI}
+#'   \item{maddison_grwt}{Yearly growth in real GDP from Maddison}
+#'   \item{rgdpe}{Expenditure-side real GDP at chained PPP from PWT}
+#'   \item{rgdpo}{Output-side real GDP at chained PPP from PWT}
+#'   \item{emp}{Number of people employed from PWT}
+#'   \item{cgdpe}{Expenditure-side real GDP at 2017 PPPs}
+#'   \item{cgdpo}{Output-side real GDP at 2017 PPPs}
+#'   \item{wdi_gdp_pp_cur_us}{Real GDP at current US dollars}
 #' }
 #' @source [PRIO Battle-deaths 3.1](https://www.prio.org/data/1)
 #' @source [UCDP GED 23.1](https://ucdp.uu.se)
 #' @source [cShapes 2.0](https://icr.ethz.ch/data/cshapes/)
 #' @source [Varieties of Democracy 14](https://v-dem.net/)
+#' @source [Penn World Tables 10.01](https://www.rug.nl/ggdc/productivity/pwt)
+#' @source [Maddison Project 2020](https://www.rug.nl/ggdc/historicaldevelopment/maddison/releases/maddison-project-database-2020)
+#' @source [World Development Indicators](https://data.worldbank.org/)
 "static_world"
 
 #' Custom country to gwcode matches
@@ -127,3 +168,27 @@
 #'  \item{notes}{Notes about territorial dependencies that are more complex than what could be represented in the table (e.g., "X only includes Y").}
 #' }
 "vdem_notes"
+
+#' Historical population and education data from Wittgenstein Centre Data Explorer v.2
+#'
+#' Based on wcde::past_epop, but sets country unit as gwcode, and estimates a set of variables based on this.
+#' Deviation can arise from wcde as some countries are merged when using gwcode. Data every 5th year.
+#'
+#' @format A data frame with 2 694 rows and 12 columns:
+#' \describe{
+#'  \item{gwcode}{gwcode based on the modified CShapes 2.0, see poldat::cshp_gw_modifications}
+#'  \item{year}{The year in four digits}
+#'  \item{secprop}{The proportion of the population with completed upper secondary education}
+#'  \item{priprop}{The proportion of the population with completed primary education}
+#'  \item{psecprop}{The proportion of the population with completed post-secondary education}
+#'  \item{tdr}{Total dependency ratio: (youth + elderly) / working.}
+#'  \item{ydr}{Youth dependency ratio: youth / working}
+#'  \item{odr}{Old-age dependency ratio: elderly / working}
+#'  \item{youth}{Population between 0-14}
+#'  \item{working}{Population between 15-64}
+#'  \item{elderly}{Population from 65+}
+#'  \item{tot_pop}{Total population}
+#' }
+#'
+#' @references Lutz, Wolfgang, Anne Goujon, Samir Kc, Marcin Stonawski, and Nikolaos Stilianakis. Demographic and human capital scenarios for the 21st century: 2018 assessment for 201 countries. Publications Office of the European Union, 2018.
+"wcde_gwcode"
