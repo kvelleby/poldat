@@ -3,6 +3,7 @@
 NOTE: This package is under development. Expect this to break.
 
 ```R
+devtools::install_github("vdeminstitute/vdemdata")
 devtools::install_github("kvelleby/poldat")
 ```
 
