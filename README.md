@@ -58,6 +58,7 @@ df <- gw_panel(gw, time_interval = "week", begin = as.Date("2024-01-01"), stop =
 ```
 
 "Static world" dataset with units using territorial boundaries as in 2019, support for data from UCDP, V-Dem, WDI, WCDE, Penn World Table, Maddison Project, etc. See the data_raw/static_world.R file for how it is built.
+```R
 df <- static_world
 ```
 
