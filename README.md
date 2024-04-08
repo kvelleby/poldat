@@ -15,6 +15,15 @@ For Windows users (also in the stackoverflow):
 3. pacman -Syuv
 4. pacman -S mingw-w64-x86_64-curl
 
+igraph is another package that might be difficult for some to install. If installation fails, try:
+1. Update R and RTools to at least 4.3 (or any supported R versions for the CRAN binary of igraph).
+2. You might need glpk and libxml2 (see https://r.igraph.org/).
+  2.1. E.g., (for Windows, in RTools Bash): pacman -S mingw-w64-x86_64-glpk mingw-w64-x86_64-libxml2
+3. Try devtools::install_github("kvelleby/poldat")
+4. Try devtools::install_github("igraph/rigraph") to install igraph from the github repo
+
+If any other dependencies fail to install, please see their respective installation pages.
+
 # Useage
 
 Pull the latest version of UCDP GED from their API. `get_ucdp_ged()' caches the results on disk so next time you run with  the same settings, you will get the cached version.
