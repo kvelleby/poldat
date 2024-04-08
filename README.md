@@ -57,14 +57,8 @@ gw <- cshp_gw_modifications()
 df <- gw_panel(gw, time_interval = "week", begin = as.Date("2024-01-01"), stop = Sys.Date())
 ```
 
-Create a country-year panel dataset with battle-locations and conflict intensity from 1946-present. This includes a novel recoding of battle-locations (at the country-level) for the whole UCDP/PRIO ACD dataset, and using the modified cShapes 2.0 data as a consistent dataset for determining location. E.g., the country id's of events from UCDP GED are coded using cShapes, instead of the country_id variable supplied by UCDP. Note that 'intensity_level' is based on battle-related deaths in the dyad-year, not deaths within each country (and often spread out across years for conflicts where we only have an estimate of total deaths).
-```R
-recoded_battle_locations <- ucdp_prio_battle_locations_before_1989()
-df <- ucdp_long_cy_panel()
-
-df |> dplyr::filter(gwcode %in% c(666, 699, 665, 651, 6511, 6631), year == 1967)
-df |> dplyr::filter(year == 1948) |> dplyr::select(intensity_level) |> plot()
-df |> dplyr::filter(year == 2022) |> dplyr::select(intensity_level) |> plot()
+"Static world" dataset with units using territorial boundaries as in 2019, support for data from UCDP, V-Dem, WDI, WCDE, Penn World Table, Maddison Project, etc. See the data_raw/static_world.R file for how it is built.
+df <- static_world
 ```
 
 
