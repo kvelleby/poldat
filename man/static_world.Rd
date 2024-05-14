@@ -5,7 +5,7 @@
 \alias{static_world}
 \title{Panel data with static country ids}
 \format{
-A data frame with 13783 rows and 42 columns:
+A data frame with 13962 rows and 49 columns:
 \describe{
   \item{gwcode}{Slightly modified cShapes 2.0 gwcodes}
   \item{year}{The year of the events}
@@ -19,6 +19,10 @@ A data frame with 13783 rows and 42 columns:
   \item{high}{High estimate of battle-deaths from UCDP and PRIO}
   \item{v2x_libdem}{Liberal democracy score from V-Dem}
   \item{v2x_regime}{Regimes of the World class from V-Dem}
+  \item{v2x_accountability}{Accountability index from V-Dem}
+  \item{v2x_corr}{Corruption index from V-Dem}
+  \item{e_wbgi_gee}{Government effectiveness from V-Dem}
+  \item{e_wbgi_vae}{Voice and accountability from V-Dem}
   \item{secprop}{The proportion of the population with completed upper secondary education from WCDE}
   \item{priprop}{The proportion of the population with completed primary education from WCDE}
   \item{psecprop}{The proportion of the population with completed post-secondary education from WCDE}
@@ -28,6 +32,9 @@ A data frame with 13783 rows and 42 columns:
   \item{youth}{Population between 0-14 from WCDE}
   \item{working}{Population between 15-64 from WCDE}
   \item{elderly}{Population from 65+ from WCDE}
+  \item{wdi_undernourishment}{Prevalence of undernourishment (SN.ITK.DEFC.ZS) from WDI}
+  \item{wdi_imr}{Infant Mortality Rate from WDI (SP.DYN.IMRT.IN)}
+  \item{wdi_nmr}{Neonatal Mortality Rate from WDI (SH.DYN.NMRT)}
   \item{wcde_pop}{Total population from WCDE}
   \item{pwt_pop}{Total population from PWT}
   \item{wdi_pop}{Total population from WDI}
