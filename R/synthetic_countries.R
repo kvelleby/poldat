@@ -70,6 +70,7 @@ area_weighted_synthetic_data <- function(df, static_year, ...){
     igraph::graph_from_data_frame() # Log weigths to get multiplicative distances
   igraph::E(gew)$weight <- -1*igraph::E(gew)$weight
   weight_matrix <- exp(igraph::shortest.paths(gew, mode = "out")* -1)
+  weight_matrix <- weight_matrix / apply(weight_matrix, 1, sum) # row standardize weights
 
   uuid_strings <- df |>
     dplyr::filter(.data$year == static_year) |>
