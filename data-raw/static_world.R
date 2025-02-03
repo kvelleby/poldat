@@ -10,6 +10,9 @@ maddison <- get_ggdc(dataset = "maddison", version = "2020") |>
   dplyr::select(gwcode, year, maddison_gdp, maddison_pop)
 wcde <- wcde_gwcode |>
   dplyr::rename(wcde_pop = tot_pop)
+fs <- get_fao_food_security() |> dplyr::select(-"country_name")
+
+
 
 indicators_mean <- c(
                  "wdi_undernourishment" = "SN.ITK.DEFC.ZS",
@@ -31,6 +34,7 @@ df <- dplyr::left_join(df, pwt, by = c("gwcode", "year"))
 df <- dplyr::left_join(df, wdi, by = c("gwcode", "year"))
 df <- dplyr::left_join(df, wdi2, by = c("gwcode", "year"))
 df <- dplyr::left_join(df, wcde, by = c("gwcode", "year"))
+df <- dplyr::left_join(df, fs, by = c("gwcode", "year"))
 
 
 # Linear interpolation between 5-year intervals
@@ -116,6 +120,9 @@ df <- df |> dplyr::select(
   v2x_libdem, v2x_regime, v2x_accountability, v2x_corr, v2regdur, v2regendtype, e_wbgi_gee, e_wbgi_vae,
   priprop, secprop, psecprop, tdr, ydr, odr, youth, working, elderly,
   wdi_undernourishment, wdi_imr, wdi_nmr,
+  energy_supply, min_energy_req, calorie_var, food_variance, safe_water_pct, basic_water_pct, basic_sanit_pct, wasting_pct, wasting_num, stunting_pct,
+  stunting_num, overweight_pct, overweight_num, obesity_pct, obesity_num, anemia_pct, anemia_num, breastfeed_pct, avg_energy_req, retail_loss, rail_density,
+  safe_sanit_pct, low_birth_pct, low_birth_num, "fao_gdp_per_capita" = gdp_per_capita,
   wcde_pop, pwt_pop, wdi_pop, maddison_pop,
   wcde_pop_grwt, pwt_pop_grwt, wdi_pop_grwt, maddison_pop_grwt,
   rgdpna, wdi_gdp_pp_con_us, maddison_gdp,
