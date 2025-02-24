@@ -13,85 +13,85 @@ broad_age <- function(age){
   )
 }
 
-total_population <- function(df){
-  df |> dplyr::group_by(gwcode, year) |>
-    dplyr::summarize(tot_pop = sum(pop))
-}
-
-dependency_ratios <- function(df){
-  df |> dplyr::group_by(gwcode, year, broad_age) |>
-    dplyr::summarize(tot_pop = sum(pop)) |>
-    tidyr::pivot_wider(names_from = "broad_age", values_from = "tot_pop") |>
-    dplyr::mutate(tdr = (youth + elderly) / working,
-                  ydr = youth / working,
-                  odr = elderly / working) |>
-    dplyr::select(gwcode, year, tdr, ydr, odr, youth, working, elderly)
-}
-
-proportion_secondary_educational_attainment_in_workpop <- function(df){
-  df |> dplyr::group_by(gwcode, year, broad_age) |>
-    dplyr::mutate(tot_pop = sum(pop)) |>
-    dplyr::filter(education >= "Upper Secondary") |>
-    dplyr::group_by(gwcode, year, broad_age, tot_pop) |>
-    dplyr::summarize(sec_pop = sum(pop)) |>
-    dplyr::mutate(secprop = sec_pop / tot_pop) |>
-    dplyr::filter(broad_age == "working") |>
-    dplyr::ungroup() |>
-    dplyr::select(gwcode, year, secprop)
-}
-
-proportion_primary_educational_attainment_in_workpop <- function(df){
-  df |> dplyr::group_by(gwcode, year, broad_age) |>
-    dplyr::mutate(tot_pop = sum(pop)) |>
-    dplyr::filter(education >= "Primary") |>
-    dplyr::group_by(gwcode, year, broad_age, tot_pop) |>
-    dplyr::summarize(pri_pop = sum(pop)) |>
-    dplyr::mutate(priprop = pri_pop / tot_pop) |>
-    dplyr::filter(broad_age == "working") |>
-    dplyr::ungroup() |>
-    dplyr::select(gwcode, year, priprop)
-}
-
-proportion_post_secondary_educational_attainment_in_workpop <- function(df){
-  df |> dplyr::group_by(gwcode, year, broad_age) |>
-    dplyr::mutate(tot_pop = sum(pop)) |>
-    dplyr::filter(education >= "Post Secondary") |>
-    dplyr::group_by(gwcode, year, broad_age, tot_pop) |>
-    dplyr::summarize(psec_pop = sum(pop)) |>
-    dplyr::mutate(psecprop = psec_pop / tot_pop) |>
-    dplyr::filter(broad_age == "working") |>
-    dplyr::ungroup() |>
-    dplyr::select(gwcode, year, psecprop)
-}
+# total_population <- function(df){
+#   df |> dplyr::group_by(gwcode, year) |>
+#     dplyr::summarize(tot_pop = sum(pop))
+# }
+#
+# dependency_ratios <- function(df){
+#   df |> dplyr::group_by(gwcode, year, broad_age) |>
+#     dplyr::summarize(tot_pop = sum(pop)) |>
+#     tidyr::pivot_wider(names_from = "broad_age", values_from = "tot_pop") |>
+#     dplyr::mutate(tdr = (youth + elderly) / working,
+#                   ydr = youth / working,
+#                   odr = elderly / working) |>
+#     dplyr::select(gwcode, year, tdr, ydr, odr, youth, working, elderly)
+# }
+#
+# proportion_secondary_educational_attainment_in_workpop <- function(df){
+#   df |> dplyr::group_by(gwcode, year, broad_age) |>
+#     dplyr::mutate(tot_pop = sum(pop)) |>
+#     dplyr::filter(education >= "Upper Secondary") |>
+#     dplyr::group_by(gwcode, year, broad_age, tot_pop) |>
+#     dplyr::summarize(sec_pop = sum(pop)) |>
+#     dplyr::mutate(secprop = sec_pop / tot_pop) |>
+#     dplyr::filter(broad_age == "working") |>
+#     dplyr::ungroup() |>
+#     dplyr::select(gwcode, year, secprop)
+# }
+#
+# proportion_primary_educational_attainment_in_workpop <- function(df){
+#   df |> dplyr::group_by(gwcode, year, broad_age) |>
+#     dplyr::mutate(tot_pop = sum(pop)) |>
+#     dplyr::filter(education >= "Primary") |>
+#     dplyr::group_by(gwcode, year, broad_age, tot_pop) |>
+#     dplyr::summarize(pri_pop = sum(pop)) |>
+#     dplyr::mutate(priprop = pri_pop / tot_pop) |>
+#     dplyr::filter(broad_age == "working") |>
+#     dplyr::ungroup() |>
+#     dplyr::select(gwcode, year, priprop)
+# }
+#
+# proportion_post_secondary_educational_attainment_in_workpop <- function(df){
+#   df |> dplyr::group_by(gwcode, year, broad_age) |>
+#     dplyr::mutate(tot_pop = sum(pop)) |>
+#     dplyr::filter(education >= "Post Secondary") |>
+#     dplyr::group_by(gwcode, year, broad_age, tot_pop) |>
+#     dplyr::summarize(psec_pop = sum(pop)) |>
+#     dplyr::mutate(psecprop = psec_pop / tot_pop) |>
+#     dplyr::filter(broad_age == "working") |>
+#     dplyr::ungroup() |>
+#     dplyr::select(gwcode, year, psecprop)
+# }
 
 #### Download SSP2
 
-wl <- wcde::wic_locations
-wl <- wl |> dplyr::filter(dim == "country")
-wl$country_name <- countrycode::countrycode(wl$isono, origin = "iso3n", destination = "country.name")
-# 736 (Old Sudan Version), 830 (Channel Islands) and 530 (Netherlands Antilles) are not in WCDE.
-wl$gwcode <- countrycode::countrycode(wl$country_name, origin = "country.name", destination = "gwn",
-                                      custom_match = custom_gwcode_matches)
-# Guam, Micronesia (Federated States of), Samoa, U.S. Virgin Islands are not in gwcode (so 7 obs are dropped)
-wl <- wl |> dplyr::select(name, isono, country_name, gwcode) |> na.omit()
-
-ssp2 <- dplyr::tibble() # Need for-loop here due to issue https://github.com/guyabel/wcde/issues/5
-for(countries in wl$isono |> split(1:10)){
-  initial_connections <- showConnections(all = TRUE)
-  tmp <- wcde::get_wcde(indicator = "pop", scenario = 2, country_code = countries, pop_age = "all", pop_edu = "six")
-  new_connections <- showConnections(all = TRUE)
-  remove_these <- nrow(initial_connections)+1:(nrow(new_connections) - nrow(initial_connections))-1
-  connections <- remove_these |> purrr::map(getConnection)
-  connections |> purrr::walk(close)
-  ssp2 <- dplyr::bind_rows(ssp2, tmp)
-}
-
-ssp2$country_name <- countrycode::countrycode(ssp2$country_code, origin = "iso3n", destination = "country.name")
-ssp2$gwcode <- countrycode::countrycode(ssp2$country_name, origin = "country.name", destination = "gwn",
-                                        custom_match = custom_gwcode_matches)
-
-ssp2$broad_age <- broad_age(ssp2$age)
-ssp2$education <- ordered(ssp2$education)
+# wl <- wcde::wic_locations
+# wl <- wl |> dplyr::filter(dim == "country")
+# wl$country_name <- countrycode::countrycode(wl$isono, origin = "iso3n", destination = "country.name")
+# # 736 (Old Sudan Version), 830 (Channel Islands) and 530 (Netherlands Antilles) are not in WCDE.
+# wl$gwcode <- countrycode::countrycode(wl$country_name, origin = "country.name", destination = "gwn",
+#                                       custom_match = custom_gwcode_matches)
+# # Guam, Micronesia (Federated States of), Samoa, U.S. Virgin Islands are not in gwcode (so 7 obs are dropped)
+# wl <- wl |> dplyr::select(name, isono, country_name, gwcode) |> na.omit()
+#
+# ssp2 <- dplyr::tibble() # Need for-loop here due to issue https://github.com/guyabel/wcde/issues/5
+# for(countries in wl$isono |> split(1:10)){
+#   initial_connections <- showConnections(all = TRUE)
+#   tmp <- wcde::get_wcde(indicator = "pop", scenario = 2, country_code = countries, pop_age = "all", pop_edu = "six")
+#   new_connections <- showConnections(all = TRUE)
+#   remove_these <- nrow(initial_connections)+1:(nrow(new_connections) - nrow(initial_connections))-1
+#   connections <- remove_these |> purrr::map(getConnection)
+#   connections |> purrr::walk(close)
+#   ssp2 <- dplyr::bind_rows(ssp2, tmp)
+# }
+#
+# ssp2$country_name <- countrycode::countrycode(ssp2$country_code, origin = "iso3n", destination = "country.name")
+# ssp2$gwcode <- countrycode::countrycode(ssp2$country_name, origin = "country.name", destination = "gwn",
+#                                         custom_match = custom_gwcode_matches)
+#
+# ssp2$broad_age <- broad_age(ssp2$age)
+# ssp2$education <- ordered(ssp2$education)
 
 #### Historical data
 
@@ -118,6 +118,8 @@ pop_by_age <- wcde::past_epop |> wcde::edu_group_sum() |>
   dplyr::mutate(country_name = countrycode::countrycode(country_code, origin = "iso3n", destination = "country.name")) |>
   dplyr::mutate(gwcode = countrycode::countrycode(country_name, origin = "country.name", destination = "gwn",
                                                   custom_match = custom_gwcode_matches)) |>
+  dplyr::group_by(gwcode, year, age) |>
+  dplyr::summarize(pop = sum(pop)) |>
   tidyr::pivot_wider(names_from = "age", values_from = "pop") |>
   dplyr::mutate(tdr = (youth + elderly) / working,
                 ydr = youth / working,
