@@ -1,4 +1,4 @@
-vdem <- get_vdem(v2x_libdem, v2x_regime, v2x_accountability, v2x_corr, e_wbgi_gee, e_wbgi_vae, v2regdur) |> area_weighted_synthetic_data(2019)
+vdem <- get_vdem(v2x_libdem, v2x_regime, v2x_accountability, v2x_corr, v2xeg_eqdr, v2x_egal, v2x_polyarchy, v2pepwrgen, e_wbgi_gee, e_wbgi_vae, v2regdur) |> area_weighted_synthetic_data(2019)
 vdem2 <- get_vdem(v2regendtype, .fun = min) |> area_weighted_synthetic_data(2019)
 ucdp <- ucdpbrds |> dplyr::select(gwcode, year, best, low, high) |> area_weighted_synthetic_data(2019)
 pwt <- get_ggdc(dataset = "pwt", version = "10.01") |>
@@ -17,7 +17,8 @@ fs <- get_fao_food_security() |> dplyr::select(-"country_name")
 indicators_mean <- c(
                  "wdi_undernourishment" = "SN.ITK.DEFC.ZS",
                  "wdi_imr" = "SP.DYN.IMRT.IN",
-                 "wdi_nmr" = "SH.DYN.NMRT")
+                 "wdi_nmr" = "SH.DYN.NMRT",
+                 "wdi_gini" = "SI.POV.GINI")
 indicators_sum <- c("wdi_pop" = "SP.POP.TOTL",
                      "wdi_gdp_pp_con_us" = "NY.GDP.MKTP.PP.KD",
                      "wdi_gdp_pp_cur_us" = "NY.GDP.MKTP.PP.CD")
@@ -117,9 +118,9 @@ df <- df |> dplyr::select(
   gwcode, year,
   rgdp, gdp_grwt, gdppc, gdppc_grwt, population, pop_grwt,
   best, low, high,
-  v2x_libdem, v2x_regime, v2x_accountability, v2x_corr, v2regdur, v2regendtype, e_wbgi_gee, e_wbgi_vae,
+  v2x_polyarchy, v2x_libdem, v2x_regime, v2x_accountability, v2x_corr, v2regdur, v2xeg_eqdr, v2x_egal, v2pepwrgen, v2regendtype, e_wbgi_gee, e_wbgi_vae,
   priprop, secprop, psecprop, tdr, ydr, odr, youth, working, elderly,
-  wdi_undernourishment, wdi_imr, wdi_nmr,
+  wdi_undernourishment, wdi_imr, wdi_nmr, wdi_gini,
   energy_supply, min_energy_req, calorie_var, food_variance, safe_water_pct, basic_water_pct, basic_sanit_pct, wasting_pct, wasting_num, stunting_pct,
   stunting_num, overweight_pct, overweight_num, obesity_pct, obesity_num, anemia_pct, anemia_num, breastfeed_pct, avg_energy_req, retail_loss, rail_density,
   safe_sanit_pct, low_birth_pct, low_birth_num, "fao_gdp_per_capita" = gdp_per_capita,
