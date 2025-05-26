@@ -349,3 +349,20 @@ gw_ged_uncached <- function(static_date = NULL, ...){
 #'
 #' @export
 gw_ged <- memoise::memoise(gw_ged_uncached, cache = cachem::cache_disk(rappdirs::user_cache_dir("R-poldat")))
+
+ged_distance <- function(){
+  ged <- get_ucdp("25.1")
+  ged <- ged |> sf::st_as_sf(crs = 4326, coords = c("longitude", "latitude")) |>
+    dplyr::mutate(date_interval = lubridate::interval(date_start, date_end))
+  cshp <- cshp_gw_modifications() |> dplyr::mutate(
+    gweyear = lubridate::year(end),
+    gwemonth = lubridate::month(end),
+    gweday = lubridate::day(end),
+    gwsyear = lubridate::year(start),
+    gwsmonth = lubridate::month(start),
+    gwsday = lubridate::day(start)
+  ) |> dplyr::rename(gwsdate = start, gwedate = end)
+  library(priogrid)
+  dist <- gen_ucdpged_distance_within_country(ged = ged, cshp = cshp)
+
+}
