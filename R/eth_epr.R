@@ -1,4 +1,4 @@
-excluded_share <- function(){
+epr_excluded_share <- function(){
   library(priogrid)
   excluded <- read_epr() |>
     dplyr::filter(status %in% c("DISCRIMINATED", "POWERLESS", "SELF-EXCLUSION"))
@@ -17,6 +17,7 @@ excluded_share <- function(){
     dplyr::group_by(gwcode, year) |>
     dplyr::summarize(size = sum(size, na.rm = T)) |>
     tsibble::tsibble(key = "gwcode", index = "year") |>
-    tsibble::fill_gaps(.full = TRUE, .start = 1946, .end = 2023)
-  df
+    tsibble::fill_gaps(size = 0, .full = TRUE, .start = 1946, .end = 2023)
+  dplyr::as_tibble(df) |>
+    dplyr::rename(epr_excluded_share = size)
 }
