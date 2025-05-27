@@ -71,7 +71,7 @@ ucdpbrds <- dplyr::bind_rows(df, ged) |>
   dplyr::mutate(source = dplyr::if_else(year < 1989, "PRIO Battle-deaths 3.1", "UCDP GED 25.1"))
 
 ged_dist <- ged_distance()
-ucdpbrds <- dplyr::left_join(ucdpbrds, ged_dist, by = c("gwcode", "year")) |> View()
+ucdpbrds <- dplyr::left_join(ucdpbrds, ged_dist, by = c("gwcode", "year"))
 
 
 usethis::use_data(ucdpbrds, overwrite = TRUE)
