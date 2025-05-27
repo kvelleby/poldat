@@ -1,6 +1,6 @@
 vdem <- get_vdem(v2x_libdem, v2x_regime, v2x_accountability, v2x_corr, v2xeg_eqdr, v2x_egal, v2x_polyarchy, v2pepwrgen, e_wbgi_gee, e_wbgi_vae, v2regdur) |> area_weighted_synthetic_data(2019)
 vdem2 <- get_vdem(v2regendtype, .fun = min) |> area_weighted_synthetic_data(2019)
-ucdp <- ucdpbrds |> dplyr::select(gwcode, year, best, low, high) |> area_weighted_synthetic_data(2019)
+ucdp <- ucdpbrds |> dplyr::select(gwcode, year, best, low, high, ged_dist) |> area_weighted_synthetic_data(2019)
 pwt <- get_ggdc(dataset = "pwt", version = "10.01") |>
   dplyr::select(gwcode, year, rgdpna, rgdpe, rgdpo, pop, emp, cgdpe, cgdpo) |>
   dplyr::rename(pwt_pop = pop)
@@ -117,7 +117,7 @@ df <- df |> dplyr::mutate(gdppc = rgdp / population) |>
 df <- df |> dplyr::select(
   gwcode, year,
   rgdp, gdp_grwt, gdppc, gdppc_grwt, population, pop_grwt,
-  best, low, high,
+  best, low, high, ged_dist,
   v2x_polyarchy, v2x_libdem, v2x_regime, v2x_accountability, v2x_corr, v2regdur, v2xeg_eqdr, v2x_egal, v2pepwrgen, v2regendtype, e_wbgi_gee, e_wbgi_vae,
   priprop, secprop, psecprop, tdr, ydr, odr, youth, working, elderly,
   wdi_undernourishment, wdi_imr, wdi_nmr, wdi_gini,
