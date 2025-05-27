@@ -1,4 +1,4 @@
-vdem <- get_vdem(v2x_libdem, v2x_regime, v2x_accountability, v2x_corr, v2xeg_eqdr, v2x_egal, v2x_polyarchy, v2pepwrgen, e_wbgi_gee, e_wbgi_vae, v2regdur) |> area_weighted_synthetic_data(2019)
+vdem <- get_vdem(v2x_libdem, v2x_regime, v2x_accountability, v2x_corr, v2xeg_eqdr, v2x_egal, v2x_polyarchy, v2pepwrgen, e_peedgini, e_wbgi_gee, e_wbgi_vae, v2regdur) |> area_weighted_synthetic_data(2019)
 vdem2 <- get_vdem(v2regendtype, .fun = min) |> area_weighted_synthetic_data(2019)
 ucdp <- ucdpbrds |> dplyr::select(gwcode, year, best, low, high, ged_dist) |> area_weighted_synthetic_data(2019)
 pwt <- get_ggdc(dataset = "pwt", version = "10.01") |>
@@ -120,7 +120,7 @@ df <- df |> dplyr::select(
   rgdp, gdp_grwt, gdppc, gdppc_grwt, population, pop_grwt,
   best, low, high, ged_dist,
   epr_excluded_share,
-  v2x_polyarchy, v2x_libdem, v2x_regime, v2x_accountability, v2x_corr, v2regdur, v2xeg_eqdr, v2x_egal, v2pepwrgen, v2regendtype, e_wbgi_gee, e_wbgi_vae,
+  v2x_polyarchy, v2x_libdem, v2x_regime, v2x_accountability, v2x_corr, v2regdur, v2xeg_eqdr, v2x_egal, v2pepwrgen, v2regendtype, e_wbgi_gee, e_wbgi_vae, e_peedgini,
   priprop, secprop, psecprop, tdr, ydr, odr, youth, working, elderly,
   wdi_undernourishment, wdi_imr, wdi_nmr, wdi_gini,
   energy_supply, min_energy_req, calorie_var, food_variance, safe_water_pct, basic_water_pct, basic_sanit_pct, wasting_pct, wasting_num, stunting_pct,
