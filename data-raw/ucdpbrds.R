@@ -50,7 +50,7 @@ res <- dplyr::bind_rows(brd_single, brd_many) |>
             bdeadbes = sum(bdeadbes, na.rm = T))
 
 gw <- cshp_gw_modifications()
-ged <- gw_ged(version = "23.1", time_interval = "year", state_base = TRUE, non_state = FALSE, one_sided = FALSE,
+ged <- gw_ged(version = "25.1", time_interval = "year", state_base = TRUE, non_state = FALSE, one_sided = FALSE,
               drop_poor_precision = FALSE, test = FALSE)
 
 ged <- ged |>
@@ -65,8 +65,13 @@ df <- gw_panel(gw, time_interval = "year", begin = as.Date("1946-01-01")) |>
          bdeadbes = dplyr::if_else(is.na(bdeadbes), 0, bdeadbes)) |>
   dplyr::select(gwcode, country_name, status, owner, capname, caplong, caplat, b_def, fid, year, low = bdeadlow, high = bdeadhig, best = bdeadbes)
 
+
+
 ucdpbrds <- dplyr::bind_rows(df, ged) |>
-  dplyr::mutate(source = dplyr::if_else(year < 1989, "PRIO Battle-deaths 3.1", "UCDP GED 23.1"))
+  dplyr::mutate(source = dplyr::if_else(year < 1989, "PRIO Battle-deaths 3.1", "UCDP GED 25.1"))
+
+ged_dist <- ged_distance()
+ucdpbrds <- dplyr::left_join(ucdpbrds, ged_dist, by = c("gwcode", "year"))
 
 
 usethis::use_data(ucdpbrds, overwrite = TRUE)

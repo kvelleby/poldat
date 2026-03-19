@@ -349,3 +349,51 @@ gw_ged_uncached <- function(static_date = NULL, ...){
 #'
 #' @export
 gw_ged <- memoise::memoise(gw_ged_uncached, cache = cachem::cache_disk(rappdirs::user_cache_dir("R-poldat")))
+
+ged_distance <- function(){
+  ged <- get_ucdp("25.1")
+  ged <- ged |> sf::st_as_sf(crs = 4326, coords = c("longitude", "latitude")) |>
+    dplyr::mutate(date_interval = lubridate::interval(date_start, date_end))
+  cshp <- cshp_gw_modifications() |>
+    dplyr::mutate(
+      gweyear = lubridate::year(end),
+      gwemonth = lubridate::month(end),
+      gweday = lubridate::day(end),
+      gwsyear = lubridate::year(start),
+      gwsmonth = lubridate::month(start),
+      gwsday = lubridate::day(start)
+      ) |>
+    dplyr::mutate(
+      gweyear = dplyr::if_else(gweyear == max(gweyear), lubridate::year(max(ged$date_end)), gweyear)
+    ) |>
+    dplyr::mutate(
+      start = lubridate::ymd(paste0(gwsyear, "-", gwsmonth, "-", gwsday)),
+      end = lubridate::ymd(paste0(gweyear, "-", gwemonth, "-", gweday))
+    ) |>
+    dplyr::mutate(
+      date_interval = lubridate::interval(start, end)
+    ) |>
+      dplyr::rename(gwsdate = start, gwedate = end)
+
+  library(priogrid)
+  pgstartdate <- pgoptions$get_start_date()
+  pgenddate <- pgoptions$get_end_date()
+  pgoptions$set_start_date("1989-12-31")
+  pgoptions$set_end_date("today")
+  dist <- gen_ucdpged_distance_within_country(ged = ged, cshp = cshp)
+  gwcodes <- gen_cshapes_gwcode(cshp = cshp) |> priogrid::rast_to_df(static = FALSE, varname = "gwcode")
+  ged_dist <- dist |> priogrid::rast_to_df(static= FALSE, varname = "ged_dist")
+  ged_dist <- dplyr::left_join(gwcodes, ged_dist, by = c("pgid", "measurement_date")) |>
+    na.omit() |>
+    dplyr::group_by(gwcode, measurement_date) |>
+    dplyr::summarize(ged_dist = mean((1/((ged_dist/1e6)+1)), na.rm = T)) |>
+    dplyr::mutate(year = lubridate::year(measurement_date)) |>
+    dplyr::select(-measurement_date) |>
+    tsibble::tsibble(key = "gwcode", index = "year") |>
+    tsibble::fill_gaps(.full = T, .start = 1989, .end = 2024) |>
+    dplyr::mutate(ged_dist = dplyr::if_else(is.na(ged_dist), 0, ged_dist))
+
+  pgoptions$set_start_date(pgstartdate) # cleanup
+  pgoptions$set_end_date(pgenddate)
+  ged_dist
+}

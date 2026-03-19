@@ -217,8 +217,11 @@ cshp_gw_modifications <- function(western_sahara = TRUE,
     french_guyana <- gw |> dplyr::filter(gwcode == 120, fid == 49)
     overseas <- dplyr::bind_rows(overseas, french_guyana)
     france <- gw |> dplyr::filter(.data$gwcode == 220, .data$fid == 80)
-    combined_area <- dplyr::bind_rows(france, overseas) |> sf::st_union() # This returns multipolygon and a linestring...
-    france <- sf::st_sf(france, geometry = combined_area[2])
+    combined_area <- dplyr::bind_rows(france, overseas) |> sf::st_union()
+    if(length(combined_area)> 1){
+      combined_area <- combined_area[2]
+    }
+    france <- sf::st_sf(france, geometry = combined_area)
     france$start <- as.Date("1946-03-19")
     france$fid <- 81
 
