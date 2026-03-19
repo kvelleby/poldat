@@ -70,8 +70,11 @@ df <- gw_panel(gw, time_interval = "year", begin = as.Date("1946-01-01")) |>
 ucdpbrds <- dplyr::bind_rows(df, ged) |>
   dplyr::mutate(source = dplyr::if_else(year < 1989, "PRIO Battle-deaths 3.1", "UCDP GED 25.1"))
 
-ged_dist <- ged_distance()
-ucdpbrds <- dplyr::left_join(ucdpbrds, ged_dist, by = c("gwcode", "year"))
+# library(priogrid)
+# pgoptions$set_start_date(paste0(min(ucdpbrds$year), "-12-31"))
+# pgoptions$set_end_date(paste0(max(ucdpbrds$year), "-12-31"))
+# ged_dist <- ged_distance()
+# ucdpbrds <- dplyr::left_join(ucdpbrds, ged_dist, by = c("gwcode", "year"))
 
 
 usethis::use_data(ucdpbrds, overwrite = TRUE)
