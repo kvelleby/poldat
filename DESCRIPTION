@@ -9,6 +9,8 @@ Description: This is currently under development for my own uses.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Remotes:
+    prio-data/priogrid
 Imports:
     dplyr,
     tidyr,
@@ -37,6 +39,6 @@ Imports:
     WDI,
     wcde,
     tsibble
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.5)

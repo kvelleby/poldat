@@ -10,8 +10,9 @@
 #'
 #' @examples
 #' pwt <- get_penn(dataset = "pwt", version = "10.01")
-get_ggdc_uncached <- function(dataset = "pwt", version = "10.01", gwcode = TRUE){
+get_ggdc_uncached <- function(dataset = "pwt", version = "11.0", gwcode = TRUE){
   url <- dplyr::case_when(
+    (dataset == "pwt" & version == "11.0") ~ "https://dataverse.nl/api/access/datafile/554030",
     (dataset == "pwt" & version == "10.01") ~ "https://dataverse.nl/api/access/datafile/354098",
     (dataset == "pwt" & version == "10.0") ~ "https://www.rug.nl/ggdc/docs/pwt100.dta",
     (dataset == "pwt" & version == "10") ~ "https://www.rug.nl/ggdc/docs/pwt100.dta",
