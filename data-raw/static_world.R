@@ -1,4 +1,4 @@
-vdem <- get_vdem(v2x_libdem, v2x_regime, v2x_accountability, v2x_corr, v2xeg_eqdr, v2x_egal, v2x_polyarchy, v2pepwrgen, e_peedgini, e_wbgi_gee, e_wbgi_vae, v2regdur) |> area_weighted_synthetic_data(2019)
+vdem <- get_vdem(v2x_libdem, v2x_regime, v2x_rule, v2x_accountability, v2x_corr, v2xeg_eqdr, v2x_egal, v2x_polyarchy, v2pepwrgen, e_peedgini, e_wbgi_gee, e_wbgi_vae, v2regdur) |> area_weighted_synthetic_data(2019)
 vdem2 <- get_vdem(v2regendtype, .fun = min) |> area_weighted_synthetic_data(2019)
 ucdp <- ucdpbrds |> dplyr::select(gwcode, year, best, low, high) |> area_weighted_synthetic_data(2019)
 pwt <- get_ggdc(dataset = "pwt", version = "11.0") |>
@@ -61,15 +61,15 @@ ln_growth <- function(x) (log(x) - log(dplyr::lag(x)))
 df <- tsibble::as_tsibble(df, key = gwcode, index = year)
 
 df <- df |>
-  dplyr::mutate(pwt_grwt_na = ln_growth(rgdpna),
-         wdi_grwt_con = ln_growth(wdi_gdp_pp_con_us),
-         maddison_grwt = ln_growth(maddison_gdp))
+  dplyr::mutate(pwt_grwt_na = growth(rgdpna),
+         wdi_grwt_con = growth(wdi_gdp_pp_con_us),
+         maddison_grwt = growth(maddison_gdp))
 
 df <- df |>
-  dplyr::mutate(pwt_pop_grwt = ln_growth(pwt_pop),
-         wdi_pop_grwt = ln_growth(wdi_pop),
-         wcde_pop_grwt = ln_growth(wcde_pop),
-         maddison_pop_grwt = ln_growth(maddison_pop))
+  dplyr::mutate(pwt_pop_grwt = growth(pwt_pop),
+         wdi_pop_grwt = growth(wdi_pop),
+         wcde_pop_grwt = growth(wcde_pop),
+         maddison_pop_grwt = growth(maddison_pop))
 
 
 df <- df |> dplyr::mutate(
@@ -111,7 +111,7 @@ df <- df |> dplyr::mutate(maddison_gdp  = dplyr::if_else(maddison_gdp  == 0, NA_
 df <- df |> dplyr::mutate(maddison_pop  = dplyr::if_else(maddison_pop  == 0, NA_real_, maddison_pop ))
 
 df <- df |> dplyr::mutate(gdppc = rgdp / population) |>
-  dplyr::mutate(gdppc_grwt = ln_growth(gdppc)) |>
+  dplyr::mutate(gdppc_grwt = growth(gdppc)) |>
   dplyr::rename(gdp_grwt = grwt)
 
 # Order variables more sensibly
