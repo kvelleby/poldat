@@ -62,4 +62,12 @@ df <- gw_panel(gw, time_interval = "week", begin = as.Date("2024-01-01"), stop =
 df <- static_world
 ```
 
+Build a local DuckDB research database with every source as a raw table, the harmonised gwcode-year inputs (`sw_*`), and `static_world` computed in SQL. Write your own analysis sets and results to the same file with DBI (one read-write process at a time). See `?static_world_duckdb`.
+```R
+static_world_duckdb()
+con <- poldat_db_connect(read_only = TRUE)
+DBI::dbGetQuery(con, "SELECT * FROM static_world WHERE year = 2019")
+DBI::dbDisconnect(con)
+```
+
 

@@ -1,5 +1,6 @@
 get_parents <- function(node, g){
-  return(igraph::as_edgelist(g) |> dplyr::as_tibble() |> dplyr::filter(V2 == node) |> dplyr::pull(V1))
+  el <- igraph::as_edgelist(g)
+  el[el[, 2] == node, 1]
 }
 
 lookup_edge_values <- function(parent, variable, g){

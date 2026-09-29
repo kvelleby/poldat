@@ -41,7 +41,7 @@ get_fao_food_security_uncached <- function(gwcode = TRUE){
   final <- final |> dplyr::select(all_of(c("area", "area_code", "year", "var_names", "value"))) |>
     tidyr::pivot_wider(id_cols = c("area", "area_code", "year"), names_from = "var_names")
 
-  ccodes <- readr::read_csv("data-raw/FAOSTAT_data_2-3-2025.csv") |> janitor::clean_names()
+  ccodes <- readr::read_csv(system.file("extdata", "FAOSTAT_data_2-3-2025.csv", package = "poldat", mustWork = TRUE)) |> janitor::clean_names()
 
   final <- final |> dplyr::left_join(ccodes, by = c("area_code" = "country_code"))
 
